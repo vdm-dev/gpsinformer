@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpsinformer", "src\gpsinformer.vcxproj", "{F67CD340-A169-40BD-87A0-10EFC51C6E99}"
+	ProjectSection(ProjectDependencies) = postProject
+		{36E32BC3-0645-4C90-8BF5-6495ACB7CF5F} = {36E32BC3-0645-4C90-8BF5-6495ACB7CF5F}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dep", "dep", "{449ADB48-91E1-44F6-A748-B358A3C1311B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gloox-1.0", "dep\gloox\gloox.vcxproj", "{36E32BC3-0645-4C90-8BF5-6495ACB7CF5F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "dep\sqlite3\sqlite3.vcxproj", "{D6EF297D-7B8F-47A4-A0CE-C3DC72BA0C26}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F67CD340-A169-40BD-87A0-10EFC51C6E99}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F67CD340-A169-40BD-87A0-10EFC51C6E99}.Debug|Win32.Build.0 = Debug|Win32
+		{F67CD340-A169-40BD-87A0-10EFC51C6E99}.Release|Win32.ActiveCfg = Release|Win32
+		{F67CD340-A169-40BD-87A0-10EFC51C6E99}.Release|Win32.Build.0 = Release|Win32
+		{36E32BC3-0645-4C90-8BF5-6495ACB7CF5F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{36E32BC3-0645-4C90-8BF5-6495ACB7CF5F}.Debug|Win32.Build.0 = Debug|Win32
+		{36E32BC3-0645-4C90-8BF5-6495ACB7CF5F}.Release|Win32.ActiveCfg = Release|Win32
+		{36E32BC3-0645-4C90-8BF5-6495ACB7CF5F}.Release|Win32.Build.0 = Release|Win32
+		{D6EF297D-7B8F-47A4-A0CE-C3DC72BA0C26}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D6EF297D-7B8F-47A4-A0CE-C3DC72BA0C26}.Debug|Win32.Build.0 = Debug|Win32
+		{D6EF297D-7B8F-47A4-A0CE-C3DC72BA0C26}.Release|Win32.ActiveCfg = Release|Win32
+		{D6EF297D-7B8F-47A4-A0CE-C3DC72BA0C26}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{36E32BC3-0645-4C90-8BF5-6495ACB7CF5F} = {449ADB48-91E1-44F6-A748-B358A3C1311B}
+		{D6EF297D-7B8F-47A4-A0CE-C3DC72BA0C26} = {449ADB48-91E1-44F6-A748-B358A3C1311B}
+	EndGlobalSection
+EndGlobal
