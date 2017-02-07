@@ -107,6 +107,8 @@ bool Device::commandLogon(const std::vector<std::string>& arguments)
 
     if (_imei == imei)
     {
+        BOOST_LOG_TRIVIAL(debug) << "Receiver get authorized imei (" << imei << ")";
+
         _authorizedSession = _session;
 
         _session->send("LOAD");
@@ -119,6 +121,8 @@ bool Device::commandHeartbeat(const std::vector<std::string>& arguments)
 {
     if (arguments[0] != _imei)
         return false;
+
+    BOOST_LOG_TRIVIAL(debug) << "Receiver get heartbeat message";
 
     _session->send("ON");
 

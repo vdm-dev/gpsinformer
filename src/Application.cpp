@@ -107,7 +107,7 @@ bool Application::setApplicationPath(int argc, char* argv[])
     _applicationPath = path;
 #else
     if (argc)
-        _applicationPath = _arguments[0];
+        _applicationPath = argv[0];
 #endif // _WIN32
 
     return !_applicationPath.empty();
@@ -177,9 +177,11 @@ void Application::configureLog()
 
 void Application::handleDeviceCommand(const std::vector<std::string>& arguments)
 {
+    std::string command = algorithm::join(arguments, ",");
+    BOOST_LOG_TRIVIAL(debug) << "Receiver obtains data: " << command;
+
     if (_transmitterAuthorized)
     {
-        std::string command = algorithm::join(arguments, ",") + ";\r\n";
-        _transmitter.send(command);
+        _transmitter.send(command + ";\r\n");
     }
 }

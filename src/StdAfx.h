@@ -1,7 +1,9 @@
 #ifndef StdAfx_INCLUDED
 #define StdAfx_INCLUDED
 
+#ifdef _WIN32
 #include <sdkddkver.h>
+#endif
 
 #include <cstdio>
 #include <cstdint>
