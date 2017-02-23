@@ -2,6 +2,7 @@
 
 #include "Application.h"
 
+
 void Application::startReceiver()
 {
     bool           enabled           = _settings.get("receiver.enabled", false);
@@ -19,7 +20,7 @@ void Application::startReceiver()
     _receiver.listen(host, port);
 }
 
-void Application::handleTCPServerError(const system::error_code& error)
+void Application::handleTcpServerError(const system::error_code& error)
 {
     _devices.clear();
 
@@ -41,7 +42,7 @@ void Application::handleTCPServerError(const system::error_code& error)
     _receiverTimer.async_wait(bind(&Application::handleReceiverTimer, this, asio::placeholders::error));
 }
 
-void Application::handleTCPSessionConnect(shared_ptr<TCPSession> session)
+void Application::handleTcpSessionConnect(shared_ptr<TcpSession> session)
 {
     _devices[session] = make_shared<Device>(session);
 
@@ -56,14 +57,14 @@ void Application::handleTCPSessionConnect(shared_ptr<TCPSession> session)
     BOOST_LOG_TRIVIAL(info) << "Client <" << address << "> connected";
 }
 
-void Application::handleTCPSessionDisconnect(shared_ptr<TCPSession> session, TCPSessionHandler::Reason reason)
+void Application::handleTcpSessionDisconnect(shared_ptr<TcpSession> session, TcpSessionHandler::Reason reason)
 {
     if (!session->isActive())
         return;
 
     _devices.erase(session);
 
-    if (reason == TCPSessionHandler::ClosedByServer)
+    if (reason == TcpSessionHandler::ClosedByServer)
         return;
 
     system::error_code error;
@@ -77,7 +78,7 @@ void Application::handleTCPSessionDisconnect(shared_ptr<TCPSession> session, TCP
     BOOST_LOG_TRIVIAL(info) << "Client <" << address << "> disconnected";
 }
 
-void Application::handleTCPSessionReceivedData(shared_ptr<TCPSession> session, const std::string& data)
+void Application::handleTcpSessionReceivedData(shared_ptr<TcpSession> session, const std::string& data)
 {
     if (_devices.count(session))
         _devices[session]->processData(data);

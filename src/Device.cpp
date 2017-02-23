@@ -3,9 +3,11 @@
 #include "Device.h"
 #include "Application.h"
 
-shared_ptr<TCPSession> Device::_authorizedSession;
 
-Device::Device(shared_ptr<TCPSession> session)
+shared_ptr<TcpSession> Device::_authorizedSession;
+
+
+Device::Device(shared_ptr<TcpSession> session)
     : _session(session)
 {
 }
@@ -16,7 +18,7 @@ Device::~Device()
         _authorizedSession.reset();
 }
 
-shared_ptr<TCPSession> Device::authorizedSession()
+shared_ptr<TcpSession> Device::authorizedSession()
 {
     return _authorizedSession;
 }

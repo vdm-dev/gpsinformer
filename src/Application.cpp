@@ -1,26 +1,18 @@
 #include "StdAfx.h"
 
 #include "Application.h"
-#include "GlooxTCPClient.h"
+
 
 Application* Application::_instance = 0;
 
 Application::Application()
-    : _jabberTimer(_ioService)
-    , _receiverTimer(_ioService)
+    : _receiverTimer(_ioService)
     , _transmitterTimer(_ioService)
-    , _jabber("")
     , _receiver(_ioService)
     , _transmitter(_ioService)
     , _transmitterAuthorized(false)
 {
     _instance = this;
-
-    _jabber.setConnectionImpl(new GlooxTCPClient(_ioService, &_jabber));
-    _jabber.registerConnectionListener(this);
-    _jabber.logInstance().registerLogHandler(gloox::LogLevelDebug, gloox::LogAreaAll, this);
-    _jabber.registerMessageHandler(this);
-    _jabber.registerSubscriptionHandler(this);
 
     // Avoid C4355
     _receiver.setEventHandler(this);
@@ -54,7 +46,6 @@ int Application::main(int argc, char* argv[])
 
     configureLog();
 
-    startJabber();
     startReceiver();
     startTransmitter();
 

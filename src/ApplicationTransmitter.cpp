@@ -2,6 +2,7 @@
 
 #include "Application.h"
 
+
 void Application::startTransmitter()
 {
     bool           enabled        = _settings.get("transmitter.enabled", false);
@@ -19,7 +20,7 @@ void Application::startTransmitter()
     _transmitter.connect(host, port);
 }
 
-void Application::handleTCPClientConnect(TCPClient* client)
+void Application::handleTcpClientConnect(TcpClient* client)
 {
     _transmitterAuthorized = false;
     _transmitterBuffer.clear();
@@ -47,12 +48,12 @@ void Application::handleTCPClientConnect(TCPClient* client)
     }
 }
 
-void Application::handleTCPClientDisconnect(TCPClient* client, TCPClientHandler::Reason reason)
+void Application::handleTcpClientDisconnect(TcpClient* client, TcpClientHandler::Reason reason)
 {
     _transmitterAuthorized = false;
     _transmitterBuffer.clear();
 
-    if (reason == TCPClientHandler::ClosedByUser)
+    if (reason == TcpClientHandler::ClosedByUser)
     {
         BOOST_LOG_TRIVIAL(warning) << "Transmitter disconnected by user";
         return;
@@ -60,10 +61,10 @@ void Application::handleTCPClientDisconnect(TCPClient* client, TCPClientHandler:
 
     system::error_code error;
 
-    handleTCPClientError(client, error);
+    handleTcpClientError(client, error);
 }
 
-void Application::handleTCPClientError(TCPClient* client, const system::error_code& error)
+void Application::handleTcpClientError(TcpClient* client, const system::error_code& error)
 {
     _transmitterAuthorized = false;
     _transmitterBuffer.clear();
@@ -89,7 +90,7 @@ void Application::handleTCPClientError(TCPClient* client, const system::error_co
     _transmitterTimer.async_wait(bind(&Application::handleTransmitterTimer, this, asio::placeholders::error));
 }
 
-void Application::handleTCPClientReceivedData(TCPClient* client, const std::string& data)
+void Application::handleTcpClientReceivedData(TcpClient* client, const std::string& data)
 {
     _transmitterBuffer += data;
 
@@ -179,7 +180,7 @@ void Application::handleTCPClientReceivedData(TCPClient* client, const std::stri
         if (!command.size())
             continue;
 
-        shared_ptr<TCPSession> session = Device::authorizedSession();
+        shared_ptr<TcpSession> session = Device::authorizedSession();
 
         if (session && _devices.count(session))
             _devices[session]->processClientData(command + ";\r\n");

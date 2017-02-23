@@ -3,6 +3,8 @@
 #include "Application.h"
 #include "Utilities.h"
 
+/*
+
 void Application::handleChatCommand(const std::vector<std::string>& command, const gloox::Message& message, gloox::MessageSession* session)
 {
     if (!command.size())
@@ -99,3 +101,5 @@ void Application::handleSaveCommand(const std::vector<std::string>& command, con
     gloox::Message answer(gloox::Message::Chat, sender, answerString);
     _jabber.send(answer);
 }
+
+*/

@@ -55,14 +55,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)\dep\gloox\include;$(SolutionDir)\dep\tclap\include;$(SolutionDir)\dep\rapidxml;$(SolutionDir)\dep\boost\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)\dep\openssl\include;$(SolutionDir)\dep\sqlite3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;$(SolutionDir)\dep\boost\lib;$(SolutionDir)\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gloox-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;$(SolutionDir)\dep\openssl\lib\VC\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libeay32MDd.lib;ssleay32MDd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,42 +73,117 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)\dep\gloox\include;$(SolutionDir)\dep\tclap\include;$(SolutionDir)\dep\rapidxml;$(SolutionDir)\dep\boost\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)\dep\openssl\include;$(SolutionDir)\dep\sqlite3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;$(SolutionDir)\dep\boost\lib;$(SolutionDir)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gloox-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;$(SolutionDir)\dep\openssl\lib\VC\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libeay32MD.lib;ssleay32MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\dep\sqlite3\sqlite3.c" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ApplicationCommands.cpp" />
-    <ClCompile Include="ApplicationJabber.cpp" />
     <ClCompile Include="ApplicationReceiver.cpp" />
     <ClCompile Include="ApplicationTransmitter.cpp" />
     <ClCompile Include="Device.cpp" />
-    <ClCompile Include="GlooxTCPClient.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="StdAfx.cpp" />
-    <ClCompile Include="TCPClient.cpp" />
-    <ClCompile Include="TCPServer.cpp" />
-    <ClCompile Include="TCPSession.cpp" />
+    <ClCompile Include="TcpClient.cpp" />
+    <ClCompile Include="TcpServer.cpp" />
+    <ClCompile Include="TcpSession.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\dep\openssl\include\openssl\aes.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\asn1.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\asn1t.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\asn1_mac.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\bio.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\blowfish.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\bn.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\buffer.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\camellia.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\cast.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\cmac.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\cms.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\comp.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\conf.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\conf_api.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\crypto.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\des.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\des_old.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\dh.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\dsa.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\dso.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\dtls1.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ebcdic.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ec.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ecdh.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ecdsa.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\engine.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\err.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\evp.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\e_os2.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\hmac.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\idea.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\krb5_asn.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\kssl.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\lhash.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\md4.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\md5.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\mdc2.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\modes.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\objects.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\obj_mac.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ocsp.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\opensslconf.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\opensslv.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ossl_typ.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\pem.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\pem2.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\pkcs12.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\pkcs7.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\pqueue.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\rand.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\rc2.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\rc4.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ripemd.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\rsa.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\safestack.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\seed.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\sha.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\srp.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\srtp.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ssl.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ssl2.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ssl23.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ssl3.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\stack.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\symhacks.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\tls1.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ts.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\txt_db.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ui.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\ui_compat.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\whrlpool.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\x509.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\x509v3.h" />
+    <ClInclude Include="..\dep\openssl\include\openssl\x509_vfy.h" />
+    <ClInclude Include="..\dep\sqlite3\include\sqlite3.h" />
+    <ClInclude Include="..\dep\sqlite3\include\sqlite3ext.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Device.h" />
-    <ClInclude Include="GlooxTCPClient.h" />
-    <ClInclude Include="TCPClient.h" />
-    <ClInclude Include="TCPClientHandler.h" />
-    <ClInclude Include="TCPServer.h" />
-    <ClInclude Include="TCPSession.h" />
-    <ClInclude Include="TCPSessionHandler.h" />
+    <ClInclude Include="TcpClient.h" />
+    <ClInclude Include="TcpClientHandler.h" />
+    <ClInclude Include="TcpServer.h" />
+    <ClInclude Include="TcpSession.h" />
+    <ClInclude Include="TcpSessionHandler.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>

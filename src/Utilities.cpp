@@ -2,8 +2,10 @@
 
 #include "Utilities.h"
 
+
 namespace Utilities
 {
+
 
 std::string treeToString(const property_tree::ptree& tree, const std::string& filter, const std::string& path)
 {
@@ -61,5 +63,6 @@ bool wildcardMatch(const std::string string, const std::string pattern, size_t s
 
     return (sOffset >= string.size()) && (pOffset >= pattern.size());
 }
+
 
 } // namespace Utilities

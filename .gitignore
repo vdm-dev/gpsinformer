@@ -27,7 +27,10 @@
 *.exe
 *.out
 *.app
+
 /tmp
+/bin
 /debug
 /*.suo
 /*.sdf
+/*.opensdf

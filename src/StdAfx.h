@@ -5,6 +5,7 @@
 #include <sdkddkver.h>
 #endif
 
+
 #include <cstdio>
 #include <cstdint>
 #include <cwchar>
@@ -36,19 +37,8 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/range.hpp>
 
-#include <gloox/client.h>
-#include <gloox/connectionbase.h>
-#include <gloox/connectiondatahandler.h>
-#include <gloox/connectionlistener.h>
-#include <gloox/connectiontcpclient.h>
-#include <gloox/gloox.h>
-#include <gloox/loghandler.h>
-#include <gloox/logsink.h>
-#include <gloox/message.h>
-#include <gloox/messagehandler.h>
-#include <gloox/rostermanager.h>
-#include <gloox/subscriptionhandler.h>
 
 using namespace boost;
+
 
 #endif // StdAfx_INCLUDED
