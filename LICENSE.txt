@@ -1,0 +1,49 @@
+The MIT License (MIT)
+
+Copyright (c) 2017 Dmitry Lavygin (vdm.inbox@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+------------------------------------------------------------------------------
+
+This project contains following third-party open source software:
+
+1) Boost
+   URL: http://www.boost.org/
+   License: Boost Software License (http://www.boost.org/LICENSE_1_0.txt)
+   
+2) OpenSSL
+   URL: http://www.openssl.org
+   License: OpenSSL License (https://www.openssl.org/source/license.txt)
+   
+3) OpenSSL Win32 Binaries
+   URL: http://slproweb.com/products/Win32OpenSSL.html
+   
+4) SQLite 3
+   URL: http://www.sqlite.org/
+   License: Public Domain (http://www.sqlite.org/copyright.html)
+   
+5) UTF8-CPP (UTF-8 with C++ in a Portable Way)
+   URL: http://utfcpp.sourceforge.net/
+   License: Boost Software License (http://www.boost.org/LICENSE_1_0.txt)
+   
+6) tgbot-cpp (C++ library for Telegram bot API)
+   Author: Oleg Morozenkov
+   URL: https://github.com/reo7sp/tgbot-cpp
+   License: The MIT License (https://opensource.org/licenses/MIT)

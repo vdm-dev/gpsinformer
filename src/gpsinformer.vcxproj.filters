@@ -63,6 +63,9 @@
     <ClCompile Include="SslClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Url.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -324,6 +327,9 @@
       <Filter>Dependencies\OpenSSL</Filter>
     </ClInclude>
     <ClInclude Include="SslClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Url.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
