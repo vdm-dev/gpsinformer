@@ -2,13 +2,14 @@
 #define TcpClient_INCLUDED
 
 
+template <class T>
 class TcpClientHandler;
 
 
 class TcpClient
 {
 public:
-    TcpClient(asio::io_service& ioService, TcpClientHandler* handler = 0);
+    TcpClient(asio::io_service& ioService, TcpClientHandler<TcpClient>* handler = 0);
     ~TcpClient();
 
     void connect(const std::string& server, unsigned short port);
@@ -18,7 +19,7 @@ public:
 
     void send(const std::string& data);
 
-    void setEventHandler(TcpClientHandler* handler);
+    void setEventHandler(TcpClientHandler<TcpClient>* handler);
 
     asio::ip::tcp::socket& socket();
 
@@ -34,11 +35,11 @@ private:
     std::vector<char> _readBuffer;
     std::deque<std::string> _writeQueue;
 
-    TcpClientHandler* _handler;
+    TcpClientHandler<TcpClient>* _handler;
 };
 
 
-inline void TcpClient::setEventHandler(TcpClientHandler* handler)
+inline void TcpClient::setEventHandler(TcpClientHandler<TcpClient>* handler)
 {
     _handler = handler;
 }

@@ -4,7 +4,7 @@
 #include "TcpClientHandler.h"
 
 
-TcpClient::TcpClient(asio::io_service& ioService, TcpClientHandler* handler)
+TcpClient::TcpClient(asio::io_service& ioService, TcpClientHandler<TcpClient>* handler)
     : _ioService(ioService)
     , _resolver(ioService)
     , _socket(ioService)
@@ -38,7 +38,8 @@ void TcpClient::connect(const std::string& server, unsigned short port)
 void TcpClient::disconnect(bool byUser)
 {
     if (_handler)
-        _handler->handleTcpClientDisconnect(this, byUser ? TcpClientHandler::ClosedByUser : TcpClientHandler::ClosedByPeer);
+        _handler->handleTcpClientDisconnect(this, 
+            byUser ? TcpClientHandler<TcpClient>::ClosedByUser : TcpClientHandler<TcpClient>::ClosedByPeer);
 
     cleanup();
 }
@@ -88,7 +89,7 @@ void TcpClient::handleRead(size_t size, const system::error_code& error)
     if (error || !size)
     {
         if (_handler)
-            _handler->handleTcpClientDisconnect(this, TcpClientHandler::ClosedByPeer);
+            _handler->handleTcpClientDisconnect(this, TcpClientHandler<TcpClient>::ClosedByPeer);
 
         cleanup();
         return;
@@ -109,7 +110,7 @@ void TcpClient::handleWrite(size_t size, const system::error_code& error)
     if (error)
     {
         if (_handler)
-            _handler->handleTcpClientDisconnect(this, TcpClientHandler::ClosedByPeer);
+            _handler->handleTcpClientDisconnect(this, TcpClientHandler<TcpClient>::ClosedByPeer);
 
         cleanup();
         return;

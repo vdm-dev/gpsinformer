@@ -60,6 +60,9 @@
     <ClCompile Include="..\dep\sqlite3\sqlite3.c">
       <Filter>Dependencies\SQLite 3</Filter>
     </ClCompile>
+    <ClCompile Include="SslClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -319,6 +322,9 @@
     </ClInclude>
     <ClInclude Include="..\dep\openssl\include\openssl\x509v3.h">
       <Filter>Dependencies\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="SslClient.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

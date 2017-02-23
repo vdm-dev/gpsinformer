@@ -2,9 +2,7 @@
 #define TcpClientHandler_INCLUDED
 
 
-class TcpClient;
-
-
+template <class T>
 class TcpClientHandler
 {
 public:
@@ -16,10 +14,10 @@ public:
 
     virtual ~TcpClientHandler() { }
 
-    virtual void handleTcpClientConnect(TcpClient* client) { }
-    virtual void handleTcpClientDisconnect(TcpClient* client, Reason reason) { }
-    virtual void handleTcpClientError(TcpClient* client, const system::error_code& error) { }
-    virtual void handleTcpClientReceivedData(TcpClient* client, const std::string& data) { }
+    virtual void handleTcpClientConnect(T* client) { }
+    virtual void handleTcpClientDisconnect(T* client, Reason reason) { }
+    virtual void handleTcpClientError(T* client, const system::error_code& error) { }
+    virtual void handleTcpClientReceivedData(T* client, const std::string& data) { }
 };
 
 

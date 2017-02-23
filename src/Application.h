@@ -12,7 +12,7 @@
 
 class Application 
     : public boost::noncopyable
-    , public TcpClientHandler
+    , public TcpClientHandler<TcpClient>
     , public TcpSessionHandler
 {
     friend class Device;
