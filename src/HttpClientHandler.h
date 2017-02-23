@@ -1,6 +1,5 @@
 //
 //  Copyright (c) 2017 Dmitry Lavygin (vdm.inbox@gmail.com)
-//  Copyright (c) 2015 Oleg Morozenkov
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,46 +21,17 @@
 //
 
 
-#ifndef Url_INCLUDED
-#define Url_INCLUDED
+#ifndef HttpClientHandler_INCLUDED
+#define HttpClientHandler_INCLUDED
 
 
-#include <string>
-
-
-class Url
+class HttpClientHandler
 {
 public:
-    Url();
-	Url(const std::string& url);
+    virtual ~HttpClientHandler() { }
 
-    void parse(const std::string& url);
-
-	/**
-	 * Protocol part of an url. Example: https://
-	 */
-	std::string protocol;
-
-	/**
-	 * Host part of an url. Example: www.example.com
-	 */
-	std::string host;
-
-	/**
-	 * Path part of an url including preceding '/' char. Example: /index.html
-	 */
-	std::string path;
-
-	/**
-	 * Query part of an url without '?' char. Example: a=1&b=2&c=3
-	 */
-	std::string query;
-
-	/**
-	 * Fragment part of an url without '#' char. Example: section1
-	 */
-	std::string fragment;
+    virtual void handleHttpClientError(const system::error_code& error) { }
 };
 
 
-#endif // Url_INCLUDED
+#endif // HttpClientHandler_INCLUDED

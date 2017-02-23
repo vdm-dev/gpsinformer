@@ -34,6 +34,7 @@ SslClient::SslClient(asio::io_service& ioService, TcpClientHandler<SslClient>* h
     , _socket(ioService, _context)
     , _readBuffer(32768)
     , _handler(handler)
+    , _established(false)
 {
 }
 
@@ -43,7 +44,19 @@ SslClient::~SslClient()
 
 void SslClient::connect(const std::string& server, unsigned short port)
 {
+    _established = false;
+
     asio::ip::tcp::resolver::query query(server, lexical_cast<std::string>(port));
+
+    _resolver.async_resolve(query,
+        boost::bind(&SslClient::handleResolve, this, asio::placeholders::error, asio::placeholders::iterator));
+}
+
+void SslClient::connect(const std::string& server, const std::string& protocol)
+{
+    _established = false;
+
+    asio::ip::tcp::resolver::query query(server, protocol);
 
     _resolver.async_resolve(query,
         boost::bind(&SslClient::handleResolve, this, asio::placeholders::error, asio::placeholders::iterator));
@@ -62,11 +75,13 @@ void SslClient::cleanup()
 {
     system::error_code error;
     _socket.lowest_layer().close(error);
+
+    _established = false;
 }
 
 void SslClient::send(const std::string& data)
 {
-    if (!_socket.lowest_layer().is_open())
+    if (!isConnected())
         return;
 
     bool inProgress = !_writeQueue.empty();
@@ -110,6 +125,8 @@ void SslClient::handleHandshake(const system::error_code& error)
         cleanup();
         return;
     }
+
+    _established = true;
 
     if (_handler)
         _handler->handleTcpClientConnect(this);

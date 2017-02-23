@@ -1,6 +1,5 @@
 //
 //  Copyright (c) 2017 Dmitry Lavygin (vdm.inbox@gmail.com)
-//  Copyright (c) 2015 Oleg Morozenkov
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,46 +21,54 @@
 //
 
 
-#ifndef Url_INCLUDED
-#define Url_INCLUDED
+#include "StdAfx.h"
+
+#include "HttpsClient.h"
+#include "HttpClientHandler.h"
 
 
-#include <string>
-
-
-class Url
+HttpsClient::HttpsClient(asio::io_service& ioService, HttpClientHandler* handler)
+    : _client(ioService)
+    , _handler(handler)
 {
-public:
-    Url();
-	Url(const std::string& url);
+    _client.setEventHandler(this);
+}
 
-    void parse(const std::string& url);
+HttpsClient::~HttpsClient()
+{
 
-	/**
-	 * Protocol part of an url. Example: https://
-	 */
-	std::string protocol;
+}
 
-	/**
-	 * Host part of an url. Example: www.example.com
-	 */
-	std::string host;
+void HttpsClient::sendRequest(std::string request, bool longPoll)
+{
+    if (_client.isConnected())
+        _client.disconnect(true);
 
-	/**
-	 * Path part of an url including preceding '/' char. Example: /index.html
-	 */
-	std::string path;
+    _request = request;
+    _longPoll = longPoll;
 
-	/**
-	 * Query part of an url without '?' char. Example: a=1&b=2&c=3
-	 */
-	std::string query;
+    _client.connect(_url.host, _url.protocol);
+}
 
-	/**
-	 * Fragment part of an url without '#' char. Example: section1
-	 */
-	std::string fragment;
-};
+void HttpsClient::handleTcpClientConnect(SslClient* client)
+{
+    _response.clear();
 
+    _client.send(_request);
+}
 
-#endif // Url_INCLUDED
+void HttpsClient::handleTcpClientDisconnect(SslClient* client, TcpClientHandler::Reason reason)
+{
+    _request.clear();
+    _longPoll = false;
+}
+
+void HttpsClient::handleTcpClientError(SslClient* client, const system::error_code& error)
+{
+
+}
+
+void HttpsClient::handleTcpClientReceivedData(SslClient* client, const std::string& data)
+{
+    _response += data;
+}

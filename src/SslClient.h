@@ -36,12 +36,14 @@ public:
     ~SslClient();
 
     void connect(const std::string& server, unsigned short port);
+    void connect(const std::string& server, const std::string& protocol);
     void disconnect(bool byUser = true);
 
     void cleanup();
 
     void send(const std::string& data);
 
+    bool isConnected() const;
     void setEventHandler(TcpClientHandler<SslClient>* handler);
 
     asio::ssl::stream<asio::ip::tcp::socket>& socket();
@@ -62,8 +64,15 @@ private:
     std::deque<std::string> _writeQueue;
 
     TcpClientHandler<SslClient>* _handler;
+
+    bool _established;
 };
 
+
+inline bool SslClient::isConnected() const
+{
+    return _socket.lowest_layer().is_open() && _established;
+}
 
 inline void SslClient::setEventHandler(TcpClientHandler<SslClient>* handler)
 {

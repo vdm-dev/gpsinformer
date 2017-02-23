@@ -25,8 +25,23 @@
 #include "Url.h"
 
 
+Url::Url()
+{
+}
+
 Url::Url(const std::string& url)
 {
+    parse(url);
+}
+
+void Url::parse(const std::string& url)
+{
+    protocol.clear();
+    host.clear();
+    path.clear();
+    query.clear();
+    fragment.clear();
+
     bool isProtocolParsed = false;
     bool isHostParsed = false;
     bool isPathParsed = false;
