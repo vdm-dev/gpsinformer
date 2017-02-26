@@ -21,49 +21,24 @@
 //
 
 
-#ifndef HttpsClient_INCLUDED
-#define HttpsClient_INCLUDED
-
-
 #include "HttpRequest.h"
-#include "SslClient.h"
-#include "TcpClientHandler.h"
 
 
-class HttpClientHandler;
-
-
-class HttpsClient : public TcpClientHandler<SslClient>
+HttpRequest::HttpRequest()
+    : _longPoll(false)
+    , _tag(0)
 {
-public:
-    HttpsClient(asio::io_service& ioService, HttpClientHandler* handler = 0);
-    ~HttpsClient();
+}
 
-    void sendRequest(const HttpRequest& request);
-    void pushQueue();
-
-    void setEventHandler(HttpClientHandler* handler);
-
-private:
-    void handleTcpClientConnect(SslClient* client);
-    void handleTcpClientDisconnect(SslClient* client, TcpClientHandler::Reason reason);
-    void handleTcpClientError(SslClient* client, const system::error_code& error);
-    void handleTcpClientReceivedData(SslClient* client, const std::string& data);
-
-    SslClient _client;
-
-    std::deque<HttpRequest> _requestQueue;
-
-    std::string _response;
-
-    HttpClientHandler* _handler;
-};
-
-
-inline void HttpsClient::setEventHandler(HttpClientHandler* handler)
+HttpRequest::HttpRequest(const Url& url, const std::string& data, bool longPoll, unsigned int tag)
+    : _url(url)
+    , _data(data)
+    , _longPoll(longPoll)
+    , _tag(tag)
 {
-    _handler = handler;
 }
 
 
-#endif // HttpsClient_INCLUDED
+HttpRequest::~HttpRequest()
+{
+}

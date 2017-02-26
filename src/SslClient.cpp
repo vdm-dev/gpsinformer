@@ -44,12 +44,7 @@ SslClient::~SslClient()
 
 void SslClient::connect(const std::string& server, unsigned short port)
 {
-    _established = false;
-
-    asio::ip::tcp::resolver::query query(server, lexical_cast<std::string>(port));
-
-    _resolver.async_resolve(query,
-        boost::bind(&SslClient::handleResolve, this, asio::placeholders::error, asio::placeholders::iterator));
+    connect(server, lexical_cast<std::string>(port));
 }
 
 void SslClient::connect(const std::string& server, const std::string& protocol)

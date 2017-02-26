@@ -39,33 +39,60 @@ HttpsClient::~HttpsClient()
 
 }
 
-void HttpsClient::sendRequest(std::string request, bool longPoll)
+void HttpsClient::sendRequest(const HttpRequest& request)
+{
+    _requestQueue.push_back(request);
+
+    pushQueue();
+}
+
+void HttpsClient::pushQueue()
 {
     if (_client.isConnected())
-        _client.disconnect(true);
+    {
+        if (_requestQueue.front().isLongPoll() && !_response.size())
+        {
+            _client.disconnect(true);
+        }
+        else
+        {
+            return;
+        }
+    }
 
-    _request = request;
-    _longPoll = longPoll;
 
-    _client.connect(_url.host, _url.protocol);
+    if (_requestQueue.empty())
+    {
+        if (_handler)
+            _handler->handleHttpClientIdle();
+    }
+    else
+    {
+        Url url = _requestQueue.front().getUrl();
+
+        _client.connect(url.host, url.protocol);
+    }
 }
 
 void HttpsClient::handleTcpClientConnect(SslClient* client)
 {
     _response.clear();
 
-    _client.send(_request);
+    _client.send(_requestQueue.front().getData());
 }
 
 void HttpsClient::handleTcpClientDisconnect(SslClient* client, TcpClientHandler::Reason reason)
 {
-    _request.clear();
-    _longPoll = false;
+    if (_handler)
+        _handler->handleHttpClientResponse(_requestQueue.front(), _response);
+
+    _requestQueue.pop_front();
+    _response.clear();
 }
 
 void HttpsClient::handleTcpClientError(SslClient* client, const system::error_code& error)
 {
-
+    std::cout << "[HttpsClient] Error" << std::endl;
 }
 
 void HttpsClient::handleTcpClientReceivedData(SslClient* client, const std::string& data)

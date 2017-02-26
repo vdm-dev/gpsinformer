@@ -25,12 +25,17 @@
 #define HttpClientHandler_INCLUDED
 
 
+class HttpRequest;
+
+
 class HttpClientHandler
 {
 public:
     virtual ~HttpClientHandler() { }
 
     virtual void handleHttpClientError(const system::error_code& error) { }
+    virtual void handleHttpClientIdle() { }
+    virtual void handleHttpClientResponse(const HttpRequest& request, const std::string& response) { }
 };
 
 
