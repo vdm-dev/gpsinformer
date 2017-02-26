@@ -30,6 +30,8 @@
 #include "TcpServer.h"
 #include "TcpSession.h"
 #include "TcpSessionHandler.h"
+#include "TelegramBot.h"
+#include "TelegramBotHandler.h"
 #include "Device.h"
 
 
@@ -37,6 +39,7 @@ class Application
     : public boost::noncopyable
     , public TcpClientHandler<TcpClient>
     , public TcpSessionHandler
+    , public TelegramBotHandler
 {
     friend class Device;
 
@@ -74,6 +77,9 @@ private:
     void handleTcpClientReceivedData(TcpClient* client, const std::string& data);
     void handleTransmitterTimer(const system::error_code& error);
 
+    // ApplicationTelegram
+    void startTelegram();
+
     // ApplicationCommands
     /*
     void handleChatCommand(const std::vector<std::string>& command, const gloox::Message& message, gloox::MessageSession* session = 0);
@@ -97,6 +103,8 @@ private:
 
     TcpServer _receiver;
     TcpClient _transmitter;
+
+    TelegramBot _telegram;
 
     std::map<shared_ptr<TcpSession>, shared_ptr<Device>> _devices;
 

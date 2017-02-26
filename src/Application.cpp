@@ -34,12 +34,14 @@ Application::Application()
     , _receiver(_ioService)
     , _transmitter(_ioService)
     , _transmitterAuthorized(false)
+    , _telegram(_ioService)
 {
     _instance = this;
 
     // Avoid C4355
     _receiver.setEventHandler(this);
     _transmitter.setEventHandler(this);
+    _telegram.setEventHandler(this);
 }
 
 Application::~Application()
@@ -71,6 +73,7 @@ int Application::main(int argc, char* argv[])
 
     startReceiver();
     startTransmitter();
+    startTelegram();
 
     system::error_code error;
 

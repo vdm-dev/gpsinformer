@@ -90,8 +90,10 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ApplicationCommands.cpp" />
     <ClCompile Include="ApplicationReceiver.cpp" />
+    <ClCompile Include="ApplicationTelegram.cpp" />
     <ClCompile Include="ApplicationTransmitter.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="HttpParser.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
     <ClCompile Include="HttpsClient.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -100,6 +102,7 @@
     <ClCompile Include="TcpClient.cpp" />
     <ClCompile Include="TcpServer.cpp" />
     <ClCompile Include="TcpSession.cpp" />
+    <ClCompile Include="TelegramBot.cpp" />
     <ClCompile Include="Url.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
@@ -184,6 +187,8 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="HttpClientHandler.h" />
+    <ClInclude Include="HttpParser.h" />
+    <ClInclude Include="HttpReqArg.h" />
     <ClInclude Include="HttpRequest.h" />
     <ClInclude Include="HttpsClient.h" />
     <ClInclude Include="SslClient.h" />
@@ -193,6 +198,8 @@
     <ClInclude Include="TcpSession.h" />
     <ClInclude Include="TcpSessionHandler.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="TelegramBot.h" />
+    <ClInclude Include="TelegramBotHandler.h" />
     <ClInclude Include="Url.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
