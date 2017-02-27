@@ -25,8 +25,11 @@
 #define TelegramBot_INCLUDED
 
 
+#include <tgbot/TgTypeParser.h>
+
 #include "HttpsClient.h"
 #include "HttpClientHandler.h"
+#include "HttpReqArg.h"
 
 
 class TelegramBotHandler;
@@ -39,12 +42,25 @@ public:
     virtual ~TelegramBot();
 
     void start();
+    void stop();
 
     void setEventHandler(TelegramBotHandler* handler);
     void setApiUrl(const std::string& apiUrl);
     void setToken(const std::string& token);
 
 private:
+    enum Tags
+    {
+        TAG_NONE        = 0,
+        TAG_GET_UPDATES = 1
+    };
+
+    void makeRequest(const std::string& method, const std::vector<HttpReqArg>& arguments, unsigned int tag = 0, bool longPoll = false);
+
+    void requestUpdates(int32_t limit, int32_t timeout);
+
+    void handleUpdate(const TgBot::Update::Ptr update);
+
     void handleHttpClientError(const system::error_code& error);
     void handleHttpClientIdle();
     void handleHttpClientResponse(const HttpRequest& request, const std::string& response);
@@ -53,6 +69,10 @@ private:
 
     std::string _apiUrl;
     std::string _token;
+
+    int32_t _lastUpdateId;
+
+    bool _enabled;
 
     TelegramBotHandler* _handler;
 };

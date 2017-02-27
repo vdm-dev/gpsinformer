@@ -56,7 +56,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)\dep\openssl\include;$(SolutionDir)\dep\sqlite3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)\dep\openssl\include;$(SolutionDir)\dep\sqlite3\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -74,7 +74,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)\dep\openssl\include;$(SolutionDir)\dep\sqlite3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)\dep\openssl\include;$(SolutionDir)\dep\sqlite3\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,6 +103,9 @@
     <ClCompile Include="TcpServer.cpp" />
     <ClCompile Include="TcpSession.cpp" />
     <ClCompile Include="TelegramBot.cpp" />
+    <ClCompile Include="tgbot\TgTypeParser.cpp" />
+    <ClCompile Include="tgbot\types\InlineQueryResult.cpp" />
+    <ClCompile Include="tgbot\types\InputFile.cpp" />
     <ClCompile Include="Url.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
@@ -200,6 +203,63 @@
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="TelegramBot.h" />
     <ClInclude Include="TelegramBotHandler.h" />
+    <ClInclude Include="tgbot\TgTypeParser.h" />
+    <ClInclude Include="tgbot\types\Audio.h" />
+    <ClInclude Include="tgbot\types\CallbackQuery.h" />
+    <ClInclude Include="tgbot\types\Chat.h" />
+    <ClInclude Include="tgbot\types\ChatMember.h" />
+    <ClInclude Include="tgbot\types\ChosenInlineResult.h" />
+    <ClInclude Include="tgbot\types\Contact.h" />
+    <ClInclude Include="tgbot\types\Document.h" />
+    <ClInclude Include="tgbot\types\File.h" />
+    <ClInclude Include="tgbot\types\ForceReply.h" />
+    <ClInclude Include="tgbot\types\GenericReply.h" />
+    <ClInclude Include="tgbot\types\InlineKeyboardButton.h" />
+    <ClInclude Include="tgbot\types\InlineKeyboardMarkup.h" />
+    <ClInclude Include="tgbot\types\InlineQuery.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResult.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultArticle.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultAudio.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedAudio.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedDocument.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedGif.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedMpeg4Gif.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedPhoto.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedSticker.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedVideo.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedVoice.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultContact.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultDocument.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultGame.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultGif.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultLocation.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultMpeg4Gif.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultPhoto.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultVenue.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultVideo.h" />
+    <ClInclude Include="tgbot\types\InlineQueryResultVoice.h" />
+    <ClInclude Include="tgbot\types\InputContactMessageContent.h" />
+    <ClInclude Include="tgbot\types\InputFile.h" />
+    <ClInclude Include="tgbot\types\InputLocationMessageContent.h" />
+    <ClInclude Include="tgbot\types\InputMessageContent.h" />
+    <ClInclude Include="tgbot\types\InputTextMessageContent.h" />
+    <ClInclude Include="tgbot\types\InputVenueMessageContent.h" />
+    <ClInclude Include="tgbot\types\KeyboardButton.h" />
+    <ClInclude Include="tgbot\types\Location.h" />
+    <ClInclude Include="tgbot\types\Message.h" />
+    <ClInclude Include="tgbot\types\MessageEntity.h" />
+    <ClInclude Include="tgbot\types\PhotoSize.h" />
+    <ClInclude Include="tgbot\types\ReplyKeyboardMarkup.h" />
+    <ClInclude Include="tgbot\types\ReplyKeyboardRemove.h" />
+    <ClInclude Include="tgbot\types\ResponseParameters.h" />
+    <ClInclude Include="tgbot\types\Sticker.h" />
+    <ClInclude Include="tgbot\types\Update.h" />
+    <ClInclude Include="tgbot\types\User.h" />
+    <ClInclude Include="tgbot\types\UserProfilePhotos.h" />
+    <ClInclude Include="tgbot\types\Venue.h" />
+    <ClInclude Include="tgbot\types\Video.h" />
+    <ClInclude Include="tgbot\types\Voice.h" />
+    <ClInclude Include="tgbot\types\WebhookInfo.h" />
     <ClInclude Include="Url.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>

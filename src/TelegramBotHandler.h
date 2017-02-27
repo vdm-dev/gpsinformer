@@ -25,6 +25,8 @@
 #define TelegramBotHandler_INCLUDED
 
 
+#include <tgbot/TgTypeParser.h>
+
 #include "HttpsClient.h"
 
 
@@ -32,6 +34,11 @@ class TelegramBotHandler
 {
 public:
     virtual ~TelegramBotHandler() { }
+
+    virtual void handleInlineQuery(const TgBot::InlineQuery::Ptr inlineQuery) { }
+    virtual void handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr chosenInlineResult) { }
+    virtual void handleCallbackQuery(const TgBot::CallbackQuery::Ptr callbackQuery) { }
+    virtual void handleMessage(const TgBot::Message::Ptr message) { }
 };
 
 

@@ -60,7 +60,6 @@ void HttpsClient::pushQueue()
         }
     }
 
-
     if (_requestQueue.empty())
     {
         if (_handler)
@@ -88,6 +87,9 @@ void HttpsClient::handleTcpClientDisconnect(SslClient* client, TcpClientHandler:
 
     _requestQueue.pop_front();
     _response.clear();
+
+    if (reason != TcpClientHandler::ClosedByUser)
+        pushQueue();
 }
 
 void HttpsClient::handleTcpClientError(SslClient* client, const system::error_code& error)

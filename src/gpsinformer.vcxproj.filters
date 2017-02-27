@@ -22,6 +22,12 @@
     <Filter Include="Dependencies\OpenSSL">
       <UniqueIdentifier>{b8d9214c-f254-44c0-b762-fb42c9d597d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TgBot">
+      <UniqueIdentifier>{1295358e-ae49-4eb1-bdb3-e68e08afa441}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TgBot\Types">
+      <UniqueIdentifier>{8389e7db-c00e-4a32-9c93-57b2ab79796b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -80,6 +86,15 @@
     </ClCompile>
     <ClCompile Include="HttpParser.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tgbot\TgTypeParser.cpp">
+      <Filter>TgBot</Filter>
+    </ClCompile>
+    <ClCompile Include="tgbot\types\InlineQueryResult.cpp">
+      <Filter>TgBot\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="tgbot\types\InputFile.cpp">
+      <Filter>TgBot\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -367,6 +382,177 @@
     </ClInclude>
     <ClInclude Include="HttpReqArg.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\TgTypeParser.h">
+      <Filter>TgBot</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Audio.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\CallbackQuery.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Chat.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\ChatMember.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\ChosenInlineResult.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Contact.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Document.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\File.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\ForceReply.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\GenericReply.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineKeyboardButton.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineKeyboardMarkup.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQuery.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResult.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultArticle.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultAudio.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedAudio.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedDocument.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedGif.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedMpeg4Gif.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedPhoto.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedSticker.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedVideo.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultCachedVoice.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultContact.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultDocument.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultGame.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultGif.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultLocation.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultMpeg4Gif.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultPhoto.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultVenue.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultVideo.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InlineQueryResultVoice.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InputContactMessageContent.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InputFile.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InputLocationMessageContent.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InputMessageContent.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InputTextMessageContent.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\InputVenueMessageContent.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\KeyboardButton.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Location.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Message.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\MessageEntity.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\PhotoSize.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\ReplyKeyboardMarkup.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\ReplyKeyboardRemove.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\ResponseParameters.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Sticker.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Update.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\User.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\UserProfilePhotos.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Venue.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Video.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\Voice.h">
+      <Filter>TgBot\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="tgbot\types\WebhookInfo.h">
+      <Filter>TgBot\Types</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -94,10 +94,11 @@ void SslClient::handleConnect(const system::error_code& error)
 {
     if (error)
     {
+        cleanup();
+
         if (_handler)
             _handler->handleTcpClientError(this, error);
 
-        cleanup();
         return;
     }
 
@@ -114,10 +115,11 @@ void SslClient::handleHandshake(const system::error_code& error)
 {
     if (error)
     {
+        cleanup();
+
         if (_handler)
             _handler->handleTcpClientError(this, error);
 
-        cleanup();
         return;
     }
 
@@ -134,10 +136,11 @@ void SslClient::handleRead(size_t size, const system::error_code& error)
 {
     if (error || !size)
     {
+        cleanup();
+
         if (_handler)
             _handler->handleTcpClientDisconnect(this, TcpClientHandler<SslClient>::ClosedByPeer);
 
-        cleanup();
         return;
     }
 
@@ -168,10 +171,11 @@ void SslClient::handleWrite(size_t size, const system::error_code& error)
 {
     if (error)
     {
+        cleanup();
+
         if (_handler)
             _handler->handleTcpClientDisconnect(this, TcpClientHandler<SslClient>::ClosedByPeer);
 
-        cleanup();
         return;
     }
 
