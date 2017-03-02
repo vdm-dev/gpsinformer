@@ -34,6 +34,7 @@ SslClient::SslClient(asio::io_service& ioService, TcpClientHandler<SslClient>* h
     , _socket(ioService, _context)
     , _readBuffer(32768)
     , _handler(handler)
+    , _connecting(false)
     , _established(false)
 {
 }
@@ -49,6 +50,7 @@ void SslClient::connect(const std::string& server, unsigned short port)
 
 void SslClient::connect(const std::string& server, const std::string& protocol)
 {
+    _connecting = true;
     _established = false;
 
     asio::ip::tcp::resolver::query query(server, protocol);
@@ -59,11 +61,11 @@ void SslClient::connect(const std::string& server, const std::string& protocol)
 
 void SslClient::disconnect(bool byUser)
 {
+    cleanup();
+
     if (_handler)
         _handler->handleTcpClientDisconnect(this, 
             byUser ? TcpClientHandler<SslClient>::ClosedByUser : TcpClientHandler<SslClient>::ClosedByPeer);
-
-    cleanup();
 }
 
 void SslClient::cleanup()
@@ -71,6 +73,7 @@ void SslClient::cleanup()
     system::error_code error;
     _socket.lowest_layer().close(error);
 
+    _connecting = false;
     _established = false;
 }
 

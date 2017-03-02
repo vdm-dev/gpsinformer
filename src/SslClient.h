@@ -44,6 +44,7 @@ public:
     void send(const std::string& data);
 
     bool isConnected() const;
+    bool isConnecting() const;
     void setEventHandler(TcpClientHandler<SslClient>* handler);
 
     asio::ssl::stream<asio::ip::tcp::socket>& socket();
@@ -65,6 +66,7 @@ private:
 
     TcpClientHandler<SslClient>* _handler;
 
+    bool _connecting;
     bool _established;
 };
 
@@ -72,6 +74,11 @@ private:
 inline bool SslClient::isConnected() const
 {
     return _socket.lowest_layer().is_open() && _established;
+}
+
+inline bool SslClient::isConnecting() const
+{
+    return _connecting;
 }
 
 inline void SslClient::setEventHandler(TcpClientHandler<SslClient>* handler)

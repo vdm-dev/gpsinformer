@@ -1,5 +1,6 @@
 //
 //  Copyright (c) 2017 Dmitry Lavygin (vdm.inbox@gmail.com)
+//  Copyright (c) 2015 Oleg Morozenkov
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -55,21 +56,115 @@ void TelegramBot::stop()
     _enabled = false;
 }
 
-void TelegramBot::makeRequest(const std::string& method, const std::vector<HttpReqArg>& arguments, unsigned int tag, bool longPoll)
+void TelegramBot::getMe()
 {
-    if (!_enabled || _apiUrl.empty() || _token.empty() || method.empty())
-        return;
-
-    Url url(_apiUrl + _token + "/" + method);
-
-    std::string data = HttpParser::generateRequest(url, arguments, false);
-
-    HttpRequest request(url, data, longPoll, tag);
-
-    _client.sendRequest(request);
+    std::vector<HttpReqArg> arguments;
+    makeRequest("getMe", arguments, TAG_GET_ME);
 }
 
-void TelegramBot::requestUpdates(int32_t limit, int32_t timeout)
+void TelegramBot::sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode, bool disableWebPagePreview, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+{
+    std::vector<HttpReqArg> arguments;
+
+    arguments.push_back(HttpReqArg("chat_id", chatId));
+    arguments.push_back(HttpReqArg("text", text));
+
+    switch (parseMode)
+    {
+    case TelegramBot::Markdown:
+        arguments.push_back(HttpReqArg("parse_mode", "Markdown"));
+        break;
+    case TelegramBot::Html:
+        arguments.push_back(HttpReqArg("parse_mode", "HTML"));
+        break;
+    default:
+        break;
+    }
+
+    if (disableWebPagePreview)
+        arguments.push_back(HttpReqArg("disable_web_page_preview", disableWebPagePreview));
+
+    if (disableNotification)
+        arguments.push_back(HttpReqArg("disable_notification", disableNotification));
+
+    if (replyToMessageId)
+        arguments.push_back(HttpReqArg("reply_to_message_id", replyToMessageId));
+
+    if (replyMarkup)
+        arguments.push_back(HttpReqArg("reply_markup", TgBot::TgTypeParser::getInstance().parseGenericReply(replyMarkup)));
+
+    makeRequest("sendMessage", arguments, TAG_SEND_MESSAGE);
+}
+
+void TelegramBot::sendLocation(int64_t chatId, float latitude, float longitude, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+{
+    std::vector<HttpReqArg> arguments;
+
+    arguments.push_back(HttpReqArg("chat_id", chatId));
+    arguments.push_back(HttpReqArg("latitude", latitude));
+    arguments.push_back(HttpReqArg("longitude", longitude));
+
+    if (disableNotification)
+        arguments.push_back(HttpReqArg("disable_notification", disableNotification));
+
+    if (replyToMessageId)
+        arguments.push_back(HttpReqArg("reply_to_message_id", replyToMessageId));
+
+    if (replyMarkup)
+        arguments.push_back(HttpReqArg("reply_markup", TgBot::TgTypeParser::getInstance().parseGenericReply(replyMarkup)));
+
+    makeRequest("sendLocation", arguments, TAG_SEND_LOCATION);
+}
+
+void TelegramBot::sendVenue(int64_t chatId, float latitude, float longitude, const std::string& title, const std::string& address, const std::string& foursquareId, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+{
+    std::vector<HttpReqArg> arguments;
+
+    arguments.push_back(HttpReqArg("chat_id", chatId));
+    arguments.push_back(HttpReqArg("latitude", latitude));
+    arguments.push_back(HttpReqArg("longitude", longitude));
+    arguments.push_back(HttpReqArg("title", title));
+    arguments.push_back(HttpReqArg("address", address));
+
+    if (!foursquareId.empty())
+        arguments.push_back(HttpReqArg("foursquare_id", foursquareId));
+
+    if (disableNotification)
+        arguments.push_back(HttpReqArg("disable_notification", disableNotification));
+
+    if (replyToMessageId)
+        arguments.push_back(HttpReqArg("reply_to_message_id", replyToMessageId));
+
+    if (replyMarkup)
+        arguments.push_back(HttpReqArg("reply_markup", TgBot::TgTypeParser::getInstance().parseGenericReply(replyMarkup)));
+
+    makeRequest("sendVenue", arguments, TAG_SEND_VENUE);
+}
+
+void TelegramBot::sendContact(int64_t chatId, const std::string& phoneNumber, const std::string& firstName, const std::string& lastName, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+{
+    std::vector<HttpReqArg> arguments;
+
+    arguments.push_back(HttpReqArg("chat_id", chatId));
+    arguments.push_back(HttpReqArg("phone_number", phoneNumber));
+    arguments.push_back(HttpReqArg("first_name", firstName));
+
+    if (!lastName.empty())
+        arguments.push_back(HttpReqArg("last_name", lastName));
+
+    if (disableNotification)
+        arguments.push_back(HttpReqArg("disable_notification", disableNotification));
+
+    if (replyToMessageId)
+        arguments.push_back(HttpReqArg("reply_to_message_id", replyToMessageId));
+
+    if (replyMarkup)
+        arguments.push_back(HttpReqArg("reply_markup", TgBot::TgTypeParser::getInstance().parseGenericReply(replyMarkup)));
+
+    makeRequest("sendContact", arguments, TAG_SEND_CONTACT);
+}
+
+void TelegramBot::getUpdates(int32_t limit, int32_t timeout)
 {
     std::vector<HttpReqArg> arguments;
 
@@ -84,6 +179,20 @@ void TelegramBot::requestUpdates(int32_t limit, int32_t timeout)
         arguments.push_back(HttpReqArg("timeout", timeout));
 
     makeRequest("getUpdates", arguments, TAG_GET_UPDATES, true);
+}
+
+void TelegramBot::makeRequest(const std::string& method, const std::vector<HttpReqArg>& arguments, unsigned int tag, bool longPoll)
+{
+    if (!_enabled || _apiUrl.empty() || _token.empty() || method.empty())
+        return;
+
+    Url url(_apiUrl + _token + "/" + method);
+
+    std::string data = HttpParser::generateRequest(url, arguments, false);
+
+    HttpRequest request(url, data, longPoll, tag);
+
+    _client.sendRequest(request);
 }
 
 void TelegramBot::handleUpdate(const TgBot::Update::Ptr update)
@@ -114,24 +223,36 @@ void TelegramBot::handleHttpClientIdle()
     if (!_enabled)
         return;
 
-    requestUpdates(100, 60);
+    getUpdates(100, 60);
 }
 
 void TelegramBot::handleHttpClientResponse(const HttpRequest& request, const std::string& response)
 {
     using namespace TgBot;
 
-    if (!_enabled)
+    if (!_enabled || response.empty())
         return;
 
     std::string serverResponse = HttpParser::parseResponse(response);
+
+    if (serverResponse.empty())
+        return;
 
     if (serverResponse.find("<html>") != serverResponse.npos)
         return;
 
     TgTypeParser& parser = TgTypeParser::getInstance();
 
-    property_tree::ptree json = parser.parseJson(serverResponse);
+    property_tree::ptree json;
+
+    try
+    {
+        json = parser.parseJson(serverResponse);
+    }
+    catch (...)
+    {
+        return;
+    }
 
     if (!json.get("ok", false))
     {

@@ -48,7 +48,7 @@ void HttpsClient::sendRequest(const HttpRequest& request)
 
 void HttpsClient::pushQueue()
 {
-    if (_client.isConnected())
+    if (_client.isConnecting() || _client.isConnected())
     {
         if (_requestQueue.front().isLongPoll() && !_response.size())
         {
@@ -71,6 +71,15 @@ void HttpsClient::pushQueue()
 
         _client.connect(url.host, url.protocol);
     }
+}
+
+void HttpsClient::stop()
+{
+    HttpClientHandler* handler = _handler;
+
+    _handler = 0; // Turn off events
+    _client.disconnect(true);
+    _handler = handler;
 }
 
 void HttpsClient::handleTcpClientConnect(SslClient* client)

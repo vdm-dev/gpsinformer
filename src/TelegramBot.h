@@ -1,5 +1,6 @@
 //
 //  Copyright (c) 2017 Dmitry Lavygin (vdm.inbox@gmail.com)
+//  Copyright (c) 2015 Oleg Morozenkov
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +39,13 @@ class TelegramBotHandler;
 class TelegramBot : public HttpClientHandler
 {
 public:
+    enum ParseMode
+    {
+        None,
+        Markdown,
+        Html
+    };
+
     TelegramBot(asio::io_service& ioService, TelegramBotHandler* handler = 0);
     virtual ~TelegramBot();
 
@@ -48,16 +56,28 @@ public:
     void setApiUrl(const std::string& apiUrl);
     void setToken(const std::string& token);
 
+    void getMe();
+    void sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode, bool disableWebPagePreview, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
+    void sendLocation(int64_t chatId, float latitude, float longitude, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
+    void sendVenue(int64_t chatId, float latitude, float longitude, const std::string& title, const std::string& address, const std::string& foursquareId, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
+    void sendContact(int64_t chatId, const std::string& phoneNumber, const std::string& firstName, const std::string& lastName, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
+
+
 private:
     enum Tags
     {
-        TAG_NONE        = 0,
-        TAG_GET_UPDATES = 1
+        TAG_NONE          = 0,
+        TAG_GET_UPDATES   = 1,
+        TAG_GET_ME        = 2,
+        TAG_SEND_MESSAGE  = 3,
+        TAG_SEND_LOCATION = 4,
+        TAG_SEND_VENUE    = 5,
+        TAG_SEND_CONTACT  = 6
     };
 
-    void makeRequest(const std::string& method, const std::vector<HttpReqArg>& arguments, unsigned int tag = 0, bool longPoll = false);
+    void getUpdates(int32_t limit, int32_t timeout);
 
-    void requestUpdates(int32_t limit, int32_t timeout);
+    void makeRequest(const std::string& method, const std::vector<HttpReqArg>& arguments, unsigned int tag = 0, bool longPoll = false);
 
     void handleUpdate(const TgBot::Update::Ptr update);
 

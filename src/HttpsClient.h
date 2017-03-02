@@ -42,6 +42,8 @@ public:
     void sendRequest(const HttpRequest& request);
     void pushQueue();
 
+    void stop();
+
     void setEventHandler(HttpClientHandler* handler);
 
 private:

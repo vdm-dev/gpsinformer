@@ -44,4 +44,6 @@ void Application::startTelegram()
     _telegram.setToken(token);
 
     _telegram.start();
+
+    _telegram.getMe();
 }
