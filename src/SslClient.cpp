@@ -70,6 +70,8 @@ void SslClient::disconnect(bool byUser)
 
 void SslClient::cleanup()
 {
+    _resolver.cancel();
+
     system::error_code error;
     _socket.lowest_layer().close(error);
 
@@ -159,6 +161,15 @@ void SslClient::handleRead(size_t size, const system::error_code& error)
 
 void SslClient::handleResolve(const system::error_code& error, asio::ip::tcp::resolver::iterator endpoint)
 {
+    // Connection aborted
+    if (!_connecting && !error)
+    {
+        if (_handler)
+            _handler->handleTcpClientError(this, asio::error::make_error_code(asio::error::operation_aborted));
+
+        return;
+    }
+
     if (error)
     {
         if (_handler)

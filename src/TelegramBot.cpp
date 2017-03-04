@@ -32,8 +32,10 @@
 
 TelegramBot::TelegramBot(asio::io_service& ioService, TelegramBotHandler* handler)
     : _client(ioService)
+    , _timer(ioService)
     , _handler(handler)
     , _lastUpdateId(0)
+    , _timerDelay(0)
     , _enabled(false)
 {
     _client.setEventHandler(this);
@@ -215,7 +217,24 @@ void TelegramBot::handleUpdate(const TgBot::Update::Ptr update)
 
 void TelegramBot::handleHttpClientError(const system::error_code& error)
 {
+    if (!_enabled)
+        return;
 
+    std::string message = "Telegram Bot error (code: ";
+
+    system::error_code errorCode;
+
+    _timer.expires_from_now(posix_time::milliseconds(_timerDelay), errorCode);
+
+    if (errorCode || (_timerDelay < 1))
+    {
+        BOOST_LOG_TRIVIAL(warning) << message << error << ") (no auto-reconnect)";
+        return;
+    }
+
+    BOOST_LOG_TRIVIAL(warning) << message << error << "). Trying to reconnect in " << (_timerDelay / 1000.0) << " second(s)";
+
+    _timer.async_wait(bind(&TelegramBot::handleTimerEvent, this, asio::placeholders::error));
 }
 
 void TelegramBot::handleHttpClientIdle()
@@ -275,4 +294,10 @@ void TelegramBot::handleHttpClientResponse(const HttpRequest& request, const std
         }
         break;
     }
+}
+
+void TelegramBot::handleTimerEvent(const system::error_code& error)
+{
+    if (_enabled)
+        _client.pushQueue();
 }

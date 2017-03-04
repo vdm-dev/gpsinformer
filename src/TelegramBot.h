@@ -55,6 +55,7 @@ public:
     void setEventHandler(TelegramBotHandler* handler);
     void setApiUrl(const std::string& apiUrl);
     void setToken(const std::string& token);
+    void setReconnectDelay(int64_t delay);
 
     void getMe();
     void sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode, bool disableWebPagePreview, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
@@ -85,12 +86,17 @@ private:
     void handleHttpClientIdle();
     void handleHttpClientResponse(const HttpRequest& request, const std::string& response);
 
+    void handleTimerEvent(const system::error_code& error);
+
+    asio::deadline_timer _timer;
+
     HttpsClient _client;
 
     std::string _apiUrl;
     std::string _token;
 
     int32_t _lastUpdateId;
+    int64_t _timerDelay;
 
     bool _enabled;
 
@@ -111,6 +117,11 @@ inline void TelegramBot::setApiUrl(const std::string& apiUrl)
 inline void TelegramBot::setToken(const std::string& token)
 {
     _token = token;
+}
+
+inline void TelegramBot::setReconnectDelay(int64_t delay)
+{
+    _timerDelay = delay;
 }
 
 

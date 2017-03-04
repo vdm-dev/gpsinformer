@@ -29,6 +29,7 @@
 
 HttpsClient::HttpsClient(asio::io_service& ioService, HttpClientHandler* handler)
     : _client(ioService)
+    , _waiting(false)
     , _handler(handler)
 {
     _client.setEventHandler(this);
@@ -48,16 +49,20 @@ void HttpsClient::sendRequest(const HttpRequest& request)
 
 void HttpsClient::pushQueue()
 {
+    if (_waiting)
+        return;
+
     if (_client.isConnecting() || _client.isConnected())
     {
         if (_requestQueue.front().isLongPoll() && !_response.size())
         {
-            _client.disconnect(true);
+            if (_client.isConnecting())
+                _waiting = true;
+
+            stop(false);
         }
-        else
-        {
-            return;
-        }
+
+        return;
     }
 
     if (_requestQueue.empty())
@@ -73,20 +78,27 @@ void HttpsClient::pushQueue()
     }
 }
 
-void HttpsClient::stop()
+void HttpsClient::stop(bool clear)
 {
     HttpClientHandler* handler = _handler;
 
     _handler = 0; // Turn off events
     _client.disconnect(true);
     _handler = handler;
+
+    if (clear)
+    {
+        _requestQueue.clear();
+        _waiting = false;
+    }
 }
 
 void HttpsClient::handleTcpClientConnect(SslClient* client)
 {
     _response.clear();
 
-    _client.send(_requestQueue.front().getData());
+    if (!_requestQueue.empty())
+        _client.send(_requestQueue.front().getData());
 }
 
 void HttpsClient::handleTcpClientDisconnect(SslClient* client, TcpClientHandler::Reason reason)
@@ -98,12 +110,23 @@ void HttpsClient::handleTcpClientDisconnect(SslClient* client, TcpClientHandler:
     _response.clear();
 
     if (reason != TcpClientHandler::ClosedByUser)
+    {
+        _waiting = false;
         pushQueue();
+    }
 }
 
 void HttpsClient::handleTcpClientError(SslClient* client, const system::error_code& error)
 {
-    std::cout << "[HttpsClient] Error" << std::endl;
+    if (_waiting)
+    {
+        _waiting = false;
+        pushQueue();
+    }
+    else if (_handler)
+    {
+        _handler->handleHttpClientError(error);
+    }
 }
 
 void HttpsClient::handleTcpClientReceivedData(SslClient* client, const std::string& data)

@@ -42,7 +42,7 @@ public:
     void sendRequest(const HttpRequest& request);
     void pushQueue();
 
-    void stop();
+    void stop(bool clear = true);
 
     void setEventHandler(HttpClientHandler* handler);
 
@@ -57,6 +57,8 @@ private:
     std::deque<HttpRequest> _requestQueue;
 
     std::string _response;
+
+    bool _waiting;
 
     HttpClientHandler* _handler;
 };
