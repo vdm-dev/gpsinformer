@@ -79,6 +79,12 @@ private:
 
     // ApplicationTelegram
     void startTelegram();
+    void handleInlineQuery(const TgBot::InlineQuery::Ptr inlineQuery);
+    void handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr chosenInlineResult);
+    void handleCallbackQuery(const TgBot::CallbackQuery::Ptr callbackQuery);
+    void handleMessage(const TgBot::Message::Ptr message);
+    void handleOwnMessage(const TgBot::Message::Ptr message);
+    void handleGetMe(const TgBot::User::Ptr user);
 
     // ApplicationCommands
     /*

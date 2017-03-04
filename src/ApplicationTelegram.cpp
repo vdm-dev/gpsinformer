@@ -28,9 +28,10 @@
 
 void Application::startTelegram()
 {
-    bool        enabled = _settings.get("telegram.enabled", false);
-    std::string url     = _settings.get("telegram.url", std::string("https://api.telegram.org/bot"));
-    std::string token   = _settings.get("telegram.token", std::string());
+    bool        enabled    = _settings.get("telegram.enabled", false);
+    std::string url        = _settings.get("telegram.url", std::string("https://api.telegram.org/bot"));
+    std::string token      = _settings.get("telegram.token", std::string());
+    int64_t reconnectDelay = _settings.get("telegram.reconnect_delay", 0);
 
     if (!enabled)
     {
@@ -42,8 +43,39 @@ void Application::startTelegram()
 
     _telegram.setApiUrl(url);
     _telegram.setToken(token);
+    _telegram.setReconnectDelay(reconnectDelay);
 
     _telegram.start();
 
     _telegram.getMe();
+}
+
+void Application::handleInlineQuery(const TgBot::InlineQuery::Ptr inlineQuery)
+{
+
+}
+
+void Application::handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr chosenInlineResult)
+{
+
+}
+
+void Application::handleCallbackQuery(const TgBot::CallbackQuery::Ptr callbackQuery)
+{
+
+}
+
+void Application::handleMessage(const TgBot::Message::Ptr message)
+{
+
+}
+
+void Application::handleOwnMessage(const TgBot::Message::Ptr message)
+{
+
+}
+
+void Application::handleGetMe(const TgBot::User::Ptr user)
+{
+
 }

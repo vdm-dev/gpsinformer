@@ -281,10 +281,12 @@ void TelegramBot::handleHttpClientResponse(const HttpRequest& request, const std
 
     json = json.get_child("result");
 
+    std::vector<Update::Ptr> updates;
+
     switch (request.getTag())
     {
     case TAG_GET_UPDATES:
-        std::vector<Update::Ptr> updates = parser.parseJsonAndGetArray<Update>(&TgTypeParser::parseJsonAndGetUpdate, json);
+        updates = parser.parseJsonAndGetArray<Update>(&TgTypeParser::parseJsonAndGetUpdate, json);
         for (Update::Ptr& item : updates)
         {
             if (item->updateId >= _lastUpdateId)
@@ -292,6 +294,19 @@ void TelegramBot::handleHttpClientResponse(const HttpRequest& request, const std
 
             handleUpdate(item);
         }
+        break;
+    case TAG_GET_ME:
+        if (_handler)
+            _handler->handleGetMe(parser.parseJsonAndGetUser(json));
+        break;
+    case TAG_SEND_MESSAGE:
+    case TAG_SEND_LOCATION:
+    case TAG_SEND_VENUE:
+    case TAG_SEND_CONTACT:
+        if (_handler)
+            _handler->handleOwnMessage(parser.parseJsonAndGetMessage(json));
+        break;
+    default:
         break;
     }
 }

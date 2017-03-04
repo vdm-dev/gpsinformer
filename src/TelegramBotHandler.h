@@ -39,6 +39,8 @@ public:
     virtual void handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr chosenInlineResult) { }
     virtual void handleCallbackQuery(const TgBot::CallbackQuery::Ptr callbackQuery) { }
     virtual void handleMessage(const TgBot::Message::Ptr message) { }
+    virtual void handleOwnMessage(const TgBot::Message::Ptr message) { }
+    virtual void handleGetMe(const TgBot::User::Ptr user) { }
 };
 
 
