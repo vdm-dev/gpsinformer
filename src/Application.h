@@ -87,13 +87,14 @@ private:
     void handleGetMe(const TgBot::User::Ptr user);
 
     // ApplicationCommands
-    /*
-    void handleChatCommand(const std::vector<std::string>& command, const gloox::Message& message, gloox::MessageSession* session = 0);
-    void handleGetCommand(const std::vector<std::string>& command, const gloox::JID& sender);
-    void handleSetCommand(const std::vector<std::string>& command, const gloox::JID& sender);
-    void handleLoadCommand(const std::vector<std::string>& command, const gloox::JID& sender);
-    void handleSaveCommand(const std::vector<std::string>& command, const gloox::JID& sender);
-    */
+    void fillCommandList();
+    void handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleStartCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleHelpCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleGetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleSetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleLoadCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleSaveCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
 
     static Application* _instance;
 

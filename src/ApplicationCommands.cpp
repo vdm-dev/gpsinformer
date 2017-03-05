@@ -26,43 +26,97 @@
 #include "Application.h"
 #include "Utilities.h"
 
-/*
 
-void Application::handleChatCommand(const std::vector<std::string>& command, const gloox::Message& message, gloox::MessageSession* session)
+struct ChatCommand
 {
-    if (!command.size())
+    typedef void(Application::*ChatCommandHandler)(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+
+    enum Access
+    {
+        Default = 0,
+        User = 1,
+        Owner = 2
+    };
+
+    ChatCommand(const std::string& command, const std::string& description, unsigned int access, ChatCommandHandler handler)
+        : command(command)
+        , description(description)
+        , access(access)
+        , handler(handler)
+    {
+    }
+
+    std::string command;
+    std::string description;
+    unsigned int access;
+
+    ChatCommandHandler handler;
+};
+
+
+static std::vector<ChatCommand> chatCommands;
+
+
+void Application::fillCommandList()
+{
+    chatCommands.clear();
+
+    // Basic
+    chatCommands.push_back(ChatCommand("/start", "begin interaction with me", ChatCommand::Default, &Application::handleStartCommand));
+    chatCommands.push_back(ChatCommand("/help", "show the list of commands available for you", ChatCommand::Default, &Application::handleHelpCommand));
+
+    // Settings
+    chatCommands.push_back(ChatCommand("/get", "get current settings tree or branch", ChatCommand::Owner, &Application::handleGetCommand));
+    chatCommands.push_back(ChatCommand("/set", "set new settings", ChatCommand::Owner, &Application::handleSetCommand));
+    chatCommands.push_back(ChatCommand("/load", "reload settings from file", ChatCommand::Owner, &Application::handleLoadCommand));
+    chatCommands.push_back(ChatCommand("/save", "save current settings to file", ChatCommand::Owner, &Application::handleSaveCommand));
+}
+
+void Application::handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
+{
+    if (command.empty())
         return;
 
-    if (iequals(command[0], "get"))
+    for (size_t i = 0; i < chatCommands.size(); ++i)
     {
-        handleGetCommand(command, message.from());
-    }
-    else if (iequals(command[0], "set"))
-    {
-        handleSetCommand(command, message.from());
-    }
-    else if (iequals(command[0], "load"))
-    {
-        handleLoadCommand(command, message.from());
-    }
-    else if (iequals(command[0], "save"))
-    {
-        handleSaveCommand(command, message.from());
+        if (chatCommands[i].command.empty())
+            continue;
+
+        if (iequals(command[0], chatCommands[i].command) && chatCommands[i].handler)
+            (this->*(chatCommands[i].handler))(command, originalMessage);
     }
 }
 
-void Application::handleGetCommand(const std::vector<std::string>& command, const gloox::JID& sender)
+void Application::handleStartCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
+{
+}
+
+void Application::handleHelpCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
+{
+    std::string output = "You can control me by sending these commands:\n\n";
+
+    for (size_t i = 0; i < chatCommands.size(); ++i)
+    {
+        if (chatCommands[i].command.empty())
+            continue;
+
+        output += chatCommands[i].command + " - " + chatCommands[i].description + "\n";
+    }
+
+    _telegram.sendMessage(originalMessage->from->id, output);
+}
+
+void Application::handleGetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
 {
     std::string filter;
 
     if (command.size() > 1)
         filter = command[1];
 
-    gloox::Message answer(gloox::Message::Chat, sender, Utilities::treeToString(_settings, filter));
-    _jabber.send(answer);
+    _telegram.sendMessage(originalMessage->from->id, Utilities::treeToString(_settings, filter));
 }
 
-void Application::handleSetCommand(const std::vector<std::string>& command, const gloox::JID& sender)
+void Application::handleSetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
 {
     std::string answerString;
 
@@ -100,29 +154,25 @@ void Application::handleSetCommand(const std::vector<std::string>& command, cons
     }
     else
     {
-        answerString = "Usage: set <key> <value> [!]";
+        answerString = "Usage: /set <key> <value> [!]";
     }
 
-    gloox::Message answer(gloox::Message::Chat, sender, answerString);
-    _jabber.send(answer);
+
+    _telegram.sendMessage(originalMessage->from->id, answerString);
 }
 
-void Application::handleLoadCommand(const std::vector<std::string>& command, const gloox::JID& sender)
+void Application::handleLoadCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
 {
     std::string answerString = loadConfiguration() ? 
         "The configuration has been successfully reloaded" : "The configuration reload failed";
 
-    gloox::Message answer(gloox::Message::Chat, sender, answerString);
-    _jabber.send(answer);
+    _telegram.sendMessage(originalMessage->from->id, answerString);
 }
 
-void Application::handleSaveCommand(const std::vector<std::string>& command, const gloox::JID& sender)
+void Application::handleSaveCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
 {
     std::string answerString = saveConfiguration() ? 
         "The configuration has been successfully saved" : "The configuration save failed";
 
-    gloox::Message answer(gloox::Message::Chat, sender, answerString);
-    _jabber.send(answer);
+    _telegram.sendMessage(originalMessage->from->id, answerString);
 }
-
-*/

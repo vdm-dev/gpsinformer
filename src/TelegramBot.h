@@ -58,10 +58,10 @@ public:
     void setReconnectDelay(int64_t delay);
 
     void getMe();
-    void sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode, bool disableWebPagePreview, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
-    void sendLocation(int64_t chatId, float latitude, float longitude, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
-    void sendVenue(int64_t chatId, float latitude, float longitude, const std::string& title, const std::string& address, const std::string& foursquareId, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
-    void sendContact(int64_t chatId, const std::string& phoneNumber, const std::string& firstName, const std::string& lastName, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup);
+    void sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode = ParseMode::None, bool disableWebPagePreview = false, bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr replyMarkup = TgBot::GenericReply::Ptr());
+    void sendLocation(int64_t chatId, float latitude, float longitude, bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr replyMarkup = TgBot::GenericReply::Ptr());
+    void sendVenue(int64_t chatId, float latitude, float longitude, const std::string& title, const std::string& address, const std::string& foursquareId = std::string(), bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr replyMarkup = TgBot::GenericReply::Ptr());
+    void sendContact(int64_t chatId, const std::string& phoneNumber, const std::string& firstName, const std::string& lastName = std::string(), bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr replyMarkup = TgBot::GenericReply::Ptr());
 
 
 private:

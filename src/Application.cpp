@@ -71,6 +71,8 @@ int Application::main(int argc, char* argv[])
 
     configureLog();
 
+    fillCommandList();
+
     startReceiver();
     startTransmitter();
     startTelegram();

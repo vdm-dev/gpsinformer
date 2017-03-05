@@ -67,7 +67,60 @@ void Application::handleCallbackQuery(const TgBot::CallbackQuery::Ptr callbackQu
 
 void Application::handleMessage(const TgBot::Message::Ptr message)
 {
+    std::string body = message->text;
 
+    if (body.empty() || (body[0] != '/'))
+        return;
+
+    std::string argument;
+
+    std::vector<std::string> command;
+
+    bool quoted = false;
+
+    for (size_t i = 0; i < body.size(); ++i)
+    {
+        if (!quoted)
+        {
+            if ((body[i] == '\r') || (body[i] == '\n'))
+            {
+                if (argument.size())
+                    command.push_back(argument);
+
+                argument.clear();
+
+                handleChatCommand(command, message);
+
+                command.clear();
+                continue;
+            }
+            else if ((body[i] == ' ') || (body[i] == '"'))
+            {
+                if (argument.size())
+                    command.push_back(argument);
+
+                argument.clear();
+
+                quoted = (body[i] == '"');
+
+                continue;
+            }
+        }
+        else if (body[i] == '"')
+        {
+            command.push_back(argument);
+            argument.clear();
+            quoted = false;
+            continue;
+        }
+
+        argument += body[i];
+    }
+
+    if (argument.size() || quoted)
+        command.push_back(argument);
+
+    handleChatCommand(command, message);
 }
 
 void Application::handleOwnMessage(const TgBot::Message::Ptr message)
