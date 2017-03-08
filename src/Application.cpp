@@ -25,6 +25,8 @@
 
 #include "Application.h"
 
+#include <sqlite3.h>
+
 
 Application* Application::_instance = 0;
 
@@ -35,6 +37,7 @@ Application::Application()
     , _transmitter(_ioService)
     , _transmitterAuthorized(false)
     , _telegram(_ioService)
+    , _database(0)
 {
     _instance = this;
 
@@ -70,6 +73,8 @@ int Application::main(int argc, char* argv[])
         return -1;
 
     configureLog();
+
+    openDatabase();
 
     fillCommandList();
 

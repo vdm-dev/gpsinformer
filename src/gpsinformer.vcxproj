@@ -89,6 +89,7 @@
     <ClCompile Include="..\dep\sqlite3\sqlite3.c" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ApplicationCommands.cpp" />
+    <ClCompile Include="ApplicationDatabase.cpp" />
     <ClCompile Include="ApplicationReceiver.cpp" />
     <ClCompile Include="ApplicationTelegram.cpp" />
     <ClCompile Include="ApplicationTransmitter.cpp" />

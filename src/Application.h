@@ -35,6 +35,9 @@
 #include "Device.h"
 
 
+struct sqlite3;
+
+
 class Application 
     : public boost::noncopyable
     , public TcpClientHandler<TcpClient>
@@ -50,6 +53,8 @@ public:
     static Application* instance();
 
     int main(int argc, char* argv[]);
+
+    sqlite3* database();
 
 private:
     bool parseCommandLine(int argc, char* argv[]);
@@ -86,6 +91,10 @@ private:
     void handleOwnMessage(const TgBot::Message::Ptr message);
     void handleGetMe(const TgBot::User::Ptr user);
 
+    // ApplicationDatabase
+    void openDatabase();
+    void closeDatabase();
+
     // ApplicationCommands
     void fillCommandList();
     void handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
@@ -117,8 +126,16 @@ private:
 
     std::string _transmitterBuffer;
 
+    sqlite3* _database;
+
     bool _transmitterAuthorized;
 };
+
+
+inline sqlite3* Application::database()
+{
+    return _database;
+}
 
 
 #endif // Application_INCLUDED

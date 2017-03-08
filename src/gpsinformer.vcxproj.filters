@@ -96,6 +96,9 @@
     <ClCompile Include="tgbot\types\InputFile.cpp">
       <Filter>TgBot\Types</Filter>
     </ClCompile>
+    <ClCompile Include="ApplicationDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
