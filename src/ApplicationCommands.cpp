@@ -26,6 +26,8 @@
 #include "Application.h"
 #include "Utilities.h"
 
+#include <sqlite3.h>
+
 
 struct ChatCommand
 {
@@ -37,6 +39,19 @@ struct ChatCommand
         User = 1,
         Owner = 2
     };
+
+    static std::string getAccessString(unsigned int level)
+    {
+        switch (level)
+        {
+        case ChatCommand::Owner:
+            return "owner";
+        case ChatCommand::User:
+            return "user";
+        default:
+            return "unprivileged";
+        }
+    }
 
     ChatCommand(const std::string& command, const std::string& description, unsigned int access, ChatCommandHandler handler)
         : command(command)
@@ -57,6 +72,102 @@ struct ChatCommand
 static std::vector<ChatCommand> chatCommands;
 
 
+bool searchUser(sqlite3* database, const TgBot::User::Ptr user, bool* found = 0, unsigned int* access = 0)
+{
+    sqlite3_stmt *stmt = 0;
+
+    char* sql = "SELECT * FROM users WHERE id = ? LIMIT 1";
+
+    int result = sqlite3_prepare_v2(database, sql, -1, &stmt, 0);
+
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_int(stmt, 1, user->id);
+
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_step(stmt);
+
+    if (found)
+        *found = false;
+
+    bool needUpdate = false;
+
+    while (result == SQLITE_ROW)
+    {
+        if (found)
+            *found = true;
+
+        int columns = sqlite3_column_count(stmt);
+
+        for (int column = 0; column < columns; ++column)
+        {
+            std::string columnName = sqlite3_column_name(stmt, column);
+
+            if (columnName == "firstname")
+            {
+                std::string text = (const char*) sqlite3_column_text(stmt, column);
+                needUpdate |= (text != user->firstName);
+            }
+            else if (columnName == "lastname")
+            {
+                std::string text = (const char*) sqlite3_column_text(stmt, column);
+                needUpdate |= (text != user->lastName);
+            }
+            else if (columnName == "nickname")
+            {
+                std::string text = (const char*) sqlite3_column_text(stmt, column);
+                needUpdate |= (text != user->username);
+            }
+            else if ((columnName == "access") && access)
+            {
+                *access = sqlite3_column_int(stmt, column);
+            }
+        }
+
+        result = sqlite3_step(stmt);
+    }
+
+    if ((result != SQLITE_DONE) && (result != SQLITE_OK))
+        goto error;
+
+    result = sqlite3_finalize(stmt);
+
+    if (result != SQLITE_OK)
+        goto error;
+
+    if (needUpdate)
+    {
+        sql = "UPDATE users SET firstname = ?, lastname = ?, nickname = ? WHERE id = ?";
+
+        result = sqlite3_prepare_v2(database, sql, -1, &stmt, 0);
+
+        if (result != SQLITE_OK)
+            return true;
+
+        sqlite3_bind_text(stmt, 1, user->firstName.c_str(), user->firstName.size(), 0);
+        sqlite3_bind_text(stmt, 2, user->lastName.c_str(), user->lastName.size(), 0);
+        sqlite3_bind_text(stmt, 3, user->username.c_str(), user->username.size(), 0);
+        sqlite3_bind_int(stmt, 4, user->id);
+
+        result = sqlite3_step(stmt);
+
+        if (result != SQLITE_OK)
+            return true;
+
+        sqlite3_finalize(stmt);
+    }
+
+    return true;
+
+error:
+    BOOST_LOG_TRIVIAL(debug) << "Database error: " << sqlite3_errmsg(database);
+    return false;
+}
+
+
 void Application::fillCommandList()
 {
     chatCommands.clear();
@@ -64,6 +175,7 @@ void Application::fillCommandList()
     // Basic
     chatCommands.push_back(ChatCommand("/start", "begin interaction with me", ChatCommand::Default, &Application::handleStartCommand));
     chatCommands.push_back(ChatCommand("/help", "show the list of commands available for you", ChatCommand::Default, &Application::handleHelpCommand));
+    chatCommands.push_back(ChatCommand("/password", "verify identity", ChatCommand::Default, &Application::handlePasswordCommand));
 
     // Settings
     //chatCommands.push_back(ChatCommand("/get", "get current settings tree or branch", ChatCommand::Owner, &Application::handleGetCommand));
@@ -89,6 +201,28 @@ void Application::handleChatCommand(const std::vector<std::string>& command, con
 
 void Application::handleStartCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
 {
+    std::string output = "Hi! I have troubles with database connection. Please try again later.\n";
+
+    bool found = false;
+
+    unsigned int access = 0;
+
+    if (searchUser(_database, originalMessage->from, &found, &access))
+    {
+        if (found)
+        {
+            output = "Hey " + originalMessage->from->firstName + "!\nI'm at your service.\nYour access level is *";
+            output += ChatCommand::getAccessString(access);
+            output += "*.\n";
+        }
+        else
+        {
+            output = "Sorry, but I don't know you.\nBefore we proceed further, could you please verify your identity with /password command.\n";
+        }
+    }
+
+    _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
+    return;
 }
 
 void Application::handleHelpCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
@@ -104,6 +238,26 @@ void Application::handleHelpCommand(const std::vector<std::string>& command, con
     }
 
     _telegram.sendMessage(originalMessage->from->id, output);
+}
+
+void Application::handlePasswordCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
+{
+    if (command.size() != 2)
+    {
+        _telegram.sendMessage(originalMessage->from->id, "Usage: /password *code*", TelegramBot::Markdown);
+        return;
+    }
+
+    std::string ownerCode = _settings.get("code.owner", std::string());
+    std::string userCode = _settings.get("code.user", std::string());
+
+    unsigned int access = 0;
+
+    if (!userCode.empty() && (command[1] == userCode))
+        access = ChatCommand::User;
+
+    if (!ownerCode.empty() && (command[1] == ownerCode))
+        access = ChatCommand::Owner;
 }
 
 void Application::handleGetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)

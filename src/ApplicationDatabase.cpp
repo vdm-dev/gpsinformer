@@ -51,14 +51,23 @@ void Application::openDatabase()
         return;
     }
 
-    std::string sql = "CREATE TABLE IF NOT EXISTS users ( \
+    char* sql = "CREATE TABLE IF NOT EXISTS users ( \
                           id  INTEGER NOT NULL PRIMARY KEY, \
                           firstname TEXT NOT NULL, \
                           lastname TEXT NOT NULL, \
                           nickname TEXT NOT NULL, \
                           access INTEGER NOT NULL DEFAULT 0)";
 
-    result = sqlite3_exec(_database, sql.c_str(), 0, 0, 0);
+    result = sqlite3_exec(_database, sql, 0, 0, 0);
+
+    if (result != SQLITE_OK)
+    {
+        BOOST_LOG_TRIVIAL(error) << "Database error: " << sqlite3_errmsg(_database);
+        sqlite3_close(_database);
+        _database = 0;
+
+        return;
+    }
 }
 
 void Application::closeDatabase()

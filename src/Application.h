@@ -100,6 +100,7 @@ private:
     void handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
     void handleStartCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
     void handleHelpCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handlePasswordCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
     void handleGetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
     void handleSetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
     void handleLoadCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
