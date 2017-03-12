@@ -72,6 +72,92 @@ struct ChatCommand
 static std::vector<ChatCommand> chatCommands;
 
 
+bool createUser(sqlite3* database, const TgBot::User::Ptr user, unsigned int access = ChatCommand::Default)
+{
+    sqlite3_stmt *stmt = 0;
+
+    char* sql = "INSERT INTO users (id, firstname, lastname, nickname, access) VALUES (?, ?, ?, ?, ?)";
+
+    int result = sqlite3_prepare_v2(database, sql, -1, &stmt, 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_int(stmt, 1, user->id);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_text(stmt, 2, user->firstName.c_str(), user->firstName.size(), 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_text(stmt, 3, user->lastName.c_str(), user->lastName.size(), 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_text(stmt, 4, user->username.c_str(), user->username.size(), 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_int(stmt, 5, access);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_step(stmt);
+    if ((result != SQLITE_OK) && (result != SQLITE_DONE))
+        goto error;
+
+    sqlite3_finalize(stmt);
+
+    return true;
+
+error:
+    BOOST_LOG_TRIVIAL(debug) << "Database error: " << sqlite3_errmsg(database);
+    return false;
+}
+
+bool updateUser(sqlite3* database, const TgBot::User::Ptr user, unsigned int access = ChatCommand::Default)
+{
+    sqlite3_stmt *stmt = 0;
+
+    char* sql = "UPDATE users SET firstname = ?, lastname = ?, nickname = ?, access = ? WHERE id = ?";
+
+    int result = sqlite3_prepare_v2(database, sql, -1, &stmt, 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_text(stmt, 1, user->firstName.c_str(), user->firstName.size(), 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_text(stmt, 2, user->lastName.c_str(), user->lastName.size(), 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_text(stmt, 3, user->username.c_str(), user->username.size(), 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_int(stmt, 4, access);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_bind_int(stmt, 5, user->id);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_step(stmt);
+    if ((result != SQLITE_OK) && (result != SQLITE_DONE))
+        goto error;
+
+    sqlite3_finalize(stmt);
+
+    return true;
+
+error:
+    BOOST_LOG_TRIVIAL(debug) << "Database error: " << sqlite3_errmsg(database);
+    return false;
+}
+
 bool searchUser(sqlite3* database, const TgBot::User::Ptr user, bool* found = 0, unsigned int* access = 0)
 {
     sqlite3_stmt *stmt = 0;
@@ -94,6 +180,8 @@ bool searchUser(sqlite3* database, const TgBot::User::Ptr user, bool* found = 0,
         *found = false;
 
     bool needUpdate = false;
+
+    unsigned int userAccess = ChatCommand::Default;
 
     while (result == SQLITE_ROW)
     {
@@ -121,9 +209,12 @@ bool searchUser(sqlite3* database, const TgBot::User::Ptr user, bool* found = 0,
                 std::string text = (const char*) sqlite3_column_text(stmt, column);
                 needUpdate |= (text != user->username);
             }
-            else if ((columnName == "access") && access)
+            else if (columnName == "access")
             {
-                *access = sqlite3_column_int(stmt, column);
+                userAccess = sqlite3_column_int(stmt, column);
+
+                if (access)
+                    *access = userAccess;
             }
         }
 
@@ -139,26 +230,7 @@ bool searchUser(sqlite3* database, const TgBot::User::Ptr user, bool* found = 0,
         goto error;
 
     if (needUpdate)
-    {
-        sql = "UPDATE users SET firstname = ?, lastname = ?, nickname = ? WHERE id = ?";
-
-        result = sqlite3_prepare_v2(database, sql, -1, &stmt, 0);
-
-        if (result != SQLITE_OK)
-            return true;
-
-        sqlite3_bind_text(stmt, 1, user->firstName.c_str(), user->firstName.size(), 0);
-        sqlite3_bind_text(stmt, 2, user->lastName.c_str(), user->lastName.size(), 0);
-        sqlite3_bind_text(stmt, 3, user->username.c_str(), user->username.size(), 0);
-        sqlite3_bind_int(stmt, 4, user->id);
-
-        result = sqlite3_step(stmt);
-
-        if (result != SQLITE_OK)
-            return true;
-
-        sqlite3_finalize(stmt);
-    }
+        updateUser(database, user, userAccess);
 
     return true;
 
@@ -189,19 +261,23 @@ void Application::handleChatCommand(const std::vector<std::string>& command, con
     if (command.empty())
         return;
 
+    unsigned int access = ChatCommand::Default;
+
+    searchUser(_database, originalMessage->from, 0, &access);
+
     for (size_t i = 0; i < chatCommands.size(); ++i)
     {
         if (chatCommands[i].command.empty())
             continue;
 
-        if (iequals(command[0], chatCommands[i].command) && chatCommands[i].handler)
+        if (iequals(command[0], chatCommands[i].command) && chatCommands[i].handler && (chatCommands[i].access <= access))
             (this->*(chatCommands[i].handler))(command, originalMessage);
     }
 }
 
 void Application::handleStartCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
 {
-    std::string output = "Hi! I have troubles with database connection. Please try again later.\n";
+    std::string output = "Hi! I have troubles with database connection. Please try again later.";
 
     bool found = false;
 
@@ -213,11 +289,11 @@ void Application::handleStartCommand(const std::vector<std::string>& command, co
         {
             output = "Hey " + originalMessage->from->firstName + "!\nI'm at your service.\nYour access level is *";
             output += ChatCommand::getAccessString(access);
-            output += "*.\n";
+            output += "*.";
         }
         else
         {
-            output = "Sorry, but I don't know you.\nBefore we proceed further, could you please verify your identity with /password command.\n";
+            output = "Sorry, but I don't know you.\nBefore we proceed further, could you please verify your identity with /password command.";
         }
     }
 
@@ -229,9 +305,13 @@ void Application::handleHelpCommand(const std::vector<std::string>& command, con
 {
     std::string output = "You can control me by sending these commands:\n\n";
 
+    unsigned int access = ChatCommand::Default;
+
+    searchUser(_database, originalMessage->from, 0, &access);
+
     for (size_t i = 0; i < chatCommands.size(); ++i)
     {
-        if (chatCommands[i].command.empty())
+        if (chatCommands[i].command.empty() || (chatCommands[i].access > access))
             continue;
 
         output += chatCommands[i].command + " - " + chatCommands[i].description + "\n";
@@ -258,6 +338,66 @@ void Application::handlePasswordCommand(const std::vector<std::string>& command,
 
     if (!ownerCode.empty() && (command[1] == ownerCode))
         access = ChatCommand::Owner;
+
+
+    std::string output = "I have troubles with database connection. Please try again later.";
+
+    bool found = false;
+
+    unsigned int currentAccess = 0;
+
+    if (searchUser(_database, originalMessage->from, &found, &currentAccess))
+    {
+        if (found)
+        {
+            if (access > currentAccess)
+            {
+                std::string oldAccessString = ChatCommand::getAccessString(currentAccess);
+
+                if (updateUser(_database, originalMessage->from, access))
+                {
+                    output = "Congratulations!\nYour access level has been increased from *";
+                    output += oldAccessString;
+                    output += "* to *";
+                    output += ChatCommand::getAccessString(access);
+                    output += "*.";
+                }
+            }
+            else if (access > ChatCommand::Default)
+            {
+                output = "Your current access level is *";
+                output += ChatCommand::getAccessString(currentAccess);
+                output += "* which is higher or equal than *";
+                output += ChatCommand::getAccessString(access);
+                output += "*.";
+            }
+            else
+            {
+                output = "You've entered wrong code.\nYour current access level is *";
+                output += ChatCommand::getAccessString(currentAccess);
+                output += "*.";
+            }
+        }
+        else
+        {
+            if (access > ChatCommand::Default)
+            {
+                if (createUser(_database, originalMessage->from, access))
+                {
+                    output = "Congratulations!\nYou've successfully registered as *";
+                    output += ChatCommand::getAccessString(access);
+                    output += "*.";
+                }
+            }
+            else
+            {
+                output = "Access denied.";
+            }
+        }
+    }
+
+    _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
+    return;
 }
 
 void Application::handleGetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
