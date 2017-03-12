@@ -4,12 +4,14 @@ set (PROJECT gpsinformer)
 
 project (${PROJECT})
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -std=c++11 -Wall")
+
+add_definitions (-DBOOST_LOG_DYN_LINK)
 
 include_directories (dep/sqlite3/include src)
 
 set (SOURCES
-	dep/sqlite3/include/sqlite3.c
+	dep/sqlite3/sqlite3.c
 	src/tgbot/TgTypeParser.cpp
 	src/tgbot/types/InlineQueryResult.cpp
 	src/tgbot/types/InputFile.cpp
@@ -52,4 +54,4 @@ set (LIB_LIST
 
 add_executable (${PROJECT} ${SOURCES})
 
-target_link_libraries (${PROJECT} ${LIB_LIST})
+target_link_libraries (${PROJECT} ${LIB_LIST} -ldl)
