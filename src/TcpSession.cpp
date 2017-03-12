@@ -40,7 +40,6 @@ TcpSession::TcpSession(asio::io_service& ioService, TcpServer& server, TcpSessio
 
 TcpSession::~TcpSession()
 {
-    std::cout << "[TcpSession] Destructor" << std::endl;
 }
 
 void TcpSession::cleanup()

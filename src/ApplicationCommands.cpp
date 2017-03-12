@@ -254,6 +254,11 @@ void Application::fillCommandList()
     //chatCommands.push_back(ChatCommand("/set", "set new settings", ChatCommand::Owner, &Application::handleSetCommand));
     chatCommands.push_back(ChatCommand("/load", "reload settings from file", ChatCommand::Owner, &Application::handleLoadCommand));
     chatCommands.push_back(ChatCommand("/save", "save current settings to file", ChatCommand::Owner, &Application::handleSaveCommand));
+
+    // Tracking
+    chatCommands.push_back(ChatCommand("/where", "send last valid location", ChatCommand::User, &Application::handleWhereCommand));
+    chatCommands.push_back(ChatCommand("/status", "send last status of tracking device", ChatCommand::User, &Application::handleStatusCommand));
+
 }
 
 void Application::handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
@@ -469,4 +474,47 @@ void Application::handleSaveCommand(const std::vector<std::string>& command, con
         "The configuration has been successfully saved" : "The configuration save failed";
 
     _telegram.sendMessage(originalMessage->from->id, answerString);
+}
+
+void Application::handleWhereCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
+{
+    if (_lastValidGpsMessage.imei.empty() || !_lastValidGpsMessage.validPosition)
+    {
+        _telegram.sendMessage(originalMessage->from->id, "Unfortunately there's no valid location received from tracker.");
+        return;
+    }
+
+    _telegram.sendLocation(originalMessage->from->id, (float) _lastValidGpsMessage.latitude, (float) _lastValidGpsMessage.longitude);
+
+    std::string output;
+
+    output += "Host Time: *" + posix_time::to_simple_string(_lastValidGpsMessage.hostTime) + "*\n";
+    output += "Tracker Time: " + posix_time::to_simple_string(_lastValidGpsMessage.trackerTime) + "\n";
+    output += "Speed: " + lexical_cast<std::string>(_lastValidGpsMessage.speed) + "\n";
+    output += "Phone: *" + _lastValidGpsMessage.phone + "*\n";
+    output += "Status: " + _lastValidGpsMessage.keyword + "\n";
+
+    _telegram.sendMessage(originalMessage->from->id, output);
+}
+
+void Application::handleStatusCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
+{
+    if (_lastGpsMessage.imei.empty())
+    {
+        _telegram.sendMessage(originalMessage->from->id, "Unfortunately there's no data received from tracker.");
+        return;
+    }
+
+    if (_lastGpsMessage.validPosition)
+        _telegram.sendLocation(originalMessage->from->id, (float) _lastGpsMessage.latitude, (float) _lastGpsMessage.longitude);
+
+    std::string output;
+
+    output += "Host Time: *" + posix_time::to_simple_string(_lastGpsMessage.hostTime) + "*\n";
+    output += "Tracker Time: " + posix_time::to_simple_string(_lastGpsMessage.trackerTime) + "\n";
+    output += "Speed: " + lexical_cast<std::string>(_lastGpsMessage.speed) + "\n";
+    output += "Phone: *" + _lastGpsMessage.phone + "*\n";
+    output += "Status: " + _lastGpsMessage.keyword + "\n";
+
+    _telegram.sendMessage(originalMessage->from->id, output);
 }

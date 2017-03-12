@@ -33,6 +33,7 @@
 #include "TelegramBot.h"
 #include "TelegramBotHandler.h"
 #include "Device.h"
+#include "GpsMessage.h"
 
 
 struct sqlite3;
@@ -105,6 +106,8 @@ private:
     void handleSetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
     void handleLoadCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
     void handleSaveCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleWhereCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleStatusCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
 
     static Application* _instance;
 
@@ -122,6 +125,9 @@ private:
     TcpClient _transmitter;
 
     TelegramBot _telegram;
+
+    GpsMessage _lastGpsMessage;
+    GpsMessage _lastValidGpsMessage;
 
     std::map<shared_ptr<TcpSession>, shared_ptr<Device>> _devices;
 

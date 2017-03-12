@@ -557,5 +557,8 @@
     <ClInclude Include="tgbot\types\WebhookInfo.h">
       <Filter>TgBot\Types</Filter>
     </ClInclude>
+    <ClInclude Include="GpsMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

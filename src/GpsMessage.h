@@ -21,36 +21,33 @@
 //
 
 
-#ifndef Device_INCLUDED
-#define Device_INCLUDED
+#ifndef GpsMessage_INCLUDED
+#define GpsMessage_INCLUDED
 
 
-#include "TcpSession.h"
-
-
-class Device
+struct GpsMessage
 {
-public:
-    Device(shared_ptr<TcpSession> session);
-    ~Device();
+    GpsMessage()
+        : latitude(0.0)
+        , longitude(0.0)
+        , speed(0.0)
+        , validPosition(false)
+    {
+    }
 
-    static shared_ptr<TcpSession> authorizedSession();
+    std::string imei;
+    std::string keyword;
+    std::string phone;
 
-    void processClientData(const std::string& data);
-    void processData(const std::string& data);
+    posix_time::ptime trackerTime;
+    posix_time::ptime hostTime;
 
-private:
-    bool commandLogon(const std::vector<std::string>& arguments);
-    bool commandHeartbeat(const std::vector<std::string>& arguments);
-    bool commandGpsData(const std::vector<std::string>& arguments);
+    double latitude;
+    double longitude;
+    double speed;
 
-    static shared_ptr<TcpSession> _authorizedSession;
-
-    shared_ptr<TcpSession> _session;
-
-    std::string _buffer;
-    std::string _imei;
+    bool validPosition;
 };
 
 
-#endif // Device_INCLUDED
+#endif // GpsMessage_INCLUDED

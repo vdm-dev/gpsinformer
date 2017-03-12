@@ -93,6 +93,10 @@ void Device::processData(const std::string& data)
                 transmit = false;
                 result  = commandHeartbeat(arguments);
             }
+            else if ((arguments.size() == 6) || (arguments.size() > 11))
+            {
+                commandGpsData(arguments);
+            }
         }
 
         if (!result || !_imei.size() || (_authorizedSession != _session))
@@ -150,6 +154,71 @@ bool Device::commandHeartbeat(const std::vector<std::string>& arguments)
     BOOST_LOG_TRIVIAL(debug) << "Receiver get heartbeat message";
 
     _session->send("ON");
+
+    return true;
+}
+
+bool Device::commandGpsData(const std::vector<std::string>& arguments)
+{
+    using namespace boost::posix_time;
+
+    GpsMessage message;
+
+    message.imei = arguments[0];
+
+    if ((message.imei.size() != 20) || (message.imei.find("imei:") != 0))
+        return false;
+
+    message.imei = message.imei.substr(5);
+    message.keyword = arguments[1];
+    message.phone = arguments[3];
+
+    std::string trackerTime = arguments[2];
+
+    size_t check = trackerTime.find_first_not_of("0123456789");
+
+    if ((trackerTime.size() == 10) && (check == std::string::npos))
+    {
+        // Make ISO time string from tracker's time format ('YYMMDDHHMM')
+        trackerTime.insert(6, 1, 'T');
+        trackerTime.insert(0, "20");
+        trackerTime.append("00");
+
+        message.trackerTime = from_iso_string(trackerTime);
+    }
+
+    message.hostTime = second_clock::universal_time();
+
+    message.validPosition = (arguments.size() > 11) && (arguments[4] == "F");
+
+    if (!message.validPosition)
+    {
+        Application::instance()->_lastGpsMessage = message;
+        return true;
+    }
+
+    try
+    {
+        message.latitude = lexical_cast<double>(arguments[7]);
+        message.longitude = lexical_cast<double>(arguments[9]);
+        message.speed = lexical_cast<double>(arguments[11]);
+    }
+    catch (...)
+    {
+        message.latitude = 0.0;
+        message.longitude = 0.0;
+        message.speed = 0.0;
+        return false;
+    }
+
+    if (arguments[8] != "N")
+        message.latitude *= -1.0;
+
+    if (arguments[10] != "E")
+        message.longitude *= -1.0;
+
+    Application::instance()->_lastGpsMessage = message;
+    Application::instance()->_lastValidGpsMessage = message;
 
     return true;
 }

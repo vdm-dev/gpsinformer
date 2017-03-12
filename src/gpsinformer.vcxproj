@@ -190,6 +190,7 @@
     <ClInclude Include="..\dep\sqlite3\include\sqlite3ext.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="GpsMessage.h" />
     <ClInclude Include="HttpClientHandler.h" />
     <ClInclude Include="HttpParser.h" />
     <ClInclude Include="HttpReqArg.h" />
