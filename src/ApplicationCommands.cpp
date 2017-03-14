@@ -162,6 +162,10 @@ bool searchUser(sqlite3* database, const TgBot::User::Ptr user, bool* found = 0,
 {
     sqlite3_stmt *stmt = 0;
 
+    bool needUpdate = false;
+
+    unsigned int userAccess = ChatCommand::Default;
+
     char* sql = "SELECT * FROM users WHERE id = ? LIMIT 1";
 
     int result = sqlite3_prepare_v2(database, sql, -1, &stmt, 0);
@@ -178,10 +182,6 @@ bool searchUser(sqlite3* database, const TgBot::User::Ptr user, bool* found = 0,
 
     if (found)
         *found = false;
-
-    bool needUpdate = false;
-
-    unsigned int userAccess = ChatCommand::Default;
 
     while (result == SQLITE_ROW)
     {
