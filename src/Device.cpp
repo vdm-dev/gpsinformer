@@ -177,12 +177,11 @@ bool Device::commandGpsData(const std::vector<std::string>& arguments)
 
     size_t check = trackerTime.find_first_not_of("0123456789");
 
-    if ((trackerTime.size() == 10) && (check == std::string::npos))
+    if ((trackerTime.size() == 12) && (check == std::string::npos))
     {
-        // Make ISO time string from tracker's time format ('YYMMDDHHMM')
+        // Make ISO time string from tracker's time format ('YYMMDDHHMMSS')
         trackerTime.insert(6, 1, 'T');
         trackerTime.insert(0, "20");
-        trackerTime.append("00");
 
         message.trackerTime = from_iso_string(trackerTime);
     }
@@ -197,10 +196,33 @@ bool Device::commandGpsData(const std::vector<std::string>& arguments)
         return true;
     }
 
+    std::string latitude = arguments[7];
+    std::string longitude = arguments[9];
+
+    size_t position = latitude.find('.');
+
+    if ((position == std::string::npos) || (position < 2))
+        return false;
+
+    std::string latitudeMinutes = latitude.substr(position - 2);
+    latitude.erase(position - 2);
+    
+    position = longitude.find('.');
+
+    if ((position == std::string::npos) || (position < 2))
+        return false;
+
+    std::string longitudeMinutes = longitude.substr(position - 2);
+    longitude.erase(position - 2);
+
     try
     {
-        message.latitude = lexical_cast<double>(arguments[7]);
-        message.longitude = lexical_cast<double>(arguments[9]);
+        message.latitude = latitude.empty() ? 0.0 : lexical_cast<double>(latitude);
+        message.latitude += lexical_cast<double>(latitudeMinutes) / 60.0;
+
+        message.longitude = longitude.empty() ? 0.0 : lexical_cast<double>(longitude);
+        message.longitude += lexical_cast<double>(longitudeMinutes) / 60.0;
+
         message.speed = lexical_cast<double>(arguments[11]);
     }
     catch (...)

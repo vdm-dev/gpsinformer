@@ -488,13 +488,20 @@ void Application::handleWhereCommand(const std::vector<std::string>& command, co
 
     std::string output;
 
-    output += "Host Time: *" + posix_time::to_simple_string(_lastValidGpsMessage.hostTime) + "*\n";
-    output += "Tracker Time: " + posix_time::to_simple_string(_lastValidGpsMessage.trackerTime) + "\n";
+    if (!_lastValidGpsMessage.hostTime.is_not_a_date_time())
+        output += "Host Time: *" + posix_time::to_simple_string(_lastValidGpsMessage.hostTime) + "*\n";
+
+    if (!_lastValidGpsMessage.trackerTime.is_not_a_date_time())
+        output += "Tracker Time: " + posix_time::to_simple_string(_lastValidGpsMessage.trackerTime) + "\n";
+
     output += "Speed: " + lexical_cast<std::string>(_lastValidGpsMessage.speed) + "\n";
-    output += "Phone: *" + _lastValidGpsMessage.phone + "*\n";
+
+    if (!_lastValidGpsMessage.phone.empty())
+        output += "Phone: *" + _lastValidGpsMessage.phone + "*\n";
+
     output += "Status: " + _lastValidGpsMessage.keyword + "\n";
 
-    _telegram.sendMessage(originalMessage->from->id, output);
+    _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
 }
 
 void Application::handleStatusCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
@@ -510,11 +517,18 @@ void Application::handleStatusCommand(const std::vector<std::string>& command, c
 
     std::string output;
 
-    output += "Host Time: *" + posix_time::to_simple_string(_lastGpsMessage.hostTime) + "*\n";
-    output += "Tracker Time: " + posix_time::to_simple_string(_lastGpsMessage.trackerTime) + "\n";
+    if (!_lastGpsMessage.hostTime.is_not_a_date_time())
+        output += "Host Time: *" + posix_time::to_simple_string(_lastGpsMessage.hostTime) + "*\n";
+
+    if (!_lastGpsMessage.trackerTime.is_not_a_date_time())
+        output += "Tracker Time: " + posix_time::to_simple_string(_lastGpsMessage.trackerTime) + "\n";
+
     output += "Speed: " + lexical_cast<std::string>(_lastGpsMessage.speed) + "\n";
-    output += "Phone: *" + _lastGpsMessage.phone + "*\n";
+
+    if (!_lastGpsMessage.phone.empty())
+        output += "Phone: *" + _lastGpsMessage.phone + "*\n";
+
     output += "Status: " + _lastGpsMessage.keyword + "\n";
 
-    _telegram.sendMessage(originalMessage->from->id, output);
+    _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
 }
