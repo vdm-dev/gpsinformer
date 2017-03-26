@@ -8,6 +8,11 @@ if (NOT MSVC)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 endif ()
 
+if (UNIX OR CYGWIN)
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")	
+endif ()
+
 
 add_definitions (-DBOOST_LOG_DYN_LINK)
 
