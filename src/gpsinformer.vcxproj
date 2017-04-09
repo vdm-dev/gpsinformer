@@ -189,6 +189,7 @@
     <ClInclude Include="..\dep\sqlite3\include\sqlite3.h" />
     <ClInclude Include="..\dep\sqlite3\include\sqlite3ext.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="ChatCommand.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="GpsMessage.h" />
     <ClInclude Include="HttpClientHandler.h" />
@@ -263,6 +264,7 @@
     <ClInclude Include="tgbot\types\Voice.h" />
     <ClInclude Include="tgbot\types\WebhookInfo.h" />
     <ClInclude Include="Url.h" />
+    <ClInclude Include="User.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

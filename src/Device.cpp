@@ -190,57 +190,53 @@ bool Device::commandGpsData(const std::vector<std::string>& arguments)
 
     message.validPosition = (arguments.size() > 11) && (arguments[4] == "F");
 
-    if (!message.validPosition)
+    if (message.validPosition)
     {
-        Application::instance()->_lastGpsMessage = message;
-        return true;
+        std::string latitude = arguments[7];
+        std::string longitude = arguments[9];
+
+        size_t position = latitude.find('.');
+
+        if ((position == std::string::npos) || (position < 2))
+            return false;
+
+        std::string latitudeMinutes = latitude.substr(position - 2);
+        latitude.erase(position - 2);
+
+        position = longitude.find('.');
+
+        if ((position == std::string::npos) || (position < 2))
+            return false;
+
+        std::string longitudeMinutes = longitude.substr(position - 2);
+        longitude.erase(position - 2);
+
+        try
+        {
+            message.latitude = latitude.empty() ? 0.0 : lexical_cast<double>(latitude);
+            message.latitude += lexical_cast<double>(latitudeMinutes) / 60.0;
+
+            message.longitude = longitude.empty() ? 0.0 : lexical_cast<double>(longitude);
+            message.longitude += lexical_cast<double>(longitudeMinutes) / 60.0;
+
+            message.speed = lexical_cast<double>(arguments[11]);
+        }
+        catch (...)
+        {
+            message.latitude = 0.0;
+            message.longitude = 0.0;
+            message.speed = 0.0;
+            return false;
+        }
+
+        if (arguments[8] != "N")
+            message.latitude *= -1.0;
+
+        if (arguments[10] != "E")
+            message.longitude *= -1.0;
     }
 
-    std::string latitude = arguments[7];
-    std::string longitude = arguments[9];
-
-    size_t position = latitude.find('.');
-
-    if ((position == std::string::npos) || (position < 2))
-        return false;
-
-    std::string latitudeMinutes = latitude.substr(position - 2);
-    latitude.erase(position - 2);
-    
-    position = longitude.find('.');
-
-    if ((position == std::string::npos) || (position < 2))
-        return false;
-
-    std::string longitudeMinutes = longitude.substr(position - 2);
-    longitude.erase(position - 2);
-
-    try
-    {
-        message.latitude = latitude.empty() ? 0.0 : lexical_cast<double>(latitude);
-        message.latitude += lexical_cast<double>(latitudeMinutes) / 60.0;
-
-        message.longitude = longitude.empty() ? 0.0 : lexical_cast<double>(longitude);
-        message.longitude += lexical_cast<double>(longitudeMinutes) / 60.0;
-
-        message.speed = lexical_cast<double>(arguments[11]);
-    }
-    catch (...)
-    {
-        message.latitude = 0.0;
-        message.longitude = 0.0;
-        message.speed = 0.0;
-        return false;
-    }
-
-    if (arguments[8] != "N")
-        message.latitude *= -1.0;
-
-    if (arguments[10] != "E")
-        message.longitude *= -1.0;
-
-    Application::instance()->_lastGpsMessage = message;
-    Application::instance()->_lastValidGpsMessage = message;
+    Application::instance()->dbAddGpsData(message);
 
     return true;
 }

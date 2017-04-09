@@ -67,6 +67,9 @@ void Application::handleCallbackQuery(const TgBot::CallbackQuery::Ptr callbackQu
 
 void Application::handleMessage(const TgBot::Message::Ptr message)
 {
+    if (!message)
+        return;
+
     std::string body = message->text;
 
     if (body.empty() || (body[0] != '/'))

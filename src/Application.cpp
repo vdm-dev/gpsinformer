@@ -157,7 +157,7 @@ bool Application::saveConfiguration()
     try
     {
         property_tree::write_xml(_configurationFile.string(), _settings, std::locale(),
-            property_tree::xml_writer_make_settings<std::string>(' ', 2));
+            property_tree::xml_writer_make_settings<property_tree::ptree::key_type>(' ', 2));
     }
     catch (const property_tree::xml_parser_error&)
     {

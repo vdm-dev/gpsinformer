@@ -126,6 +126,7 @@ set (SOURCES
 
 set (HEADERS
 	src/Application.h
+	src/ChatCommand.h
 	src/Device.h
 	src/GpsMessage.h
 	src/HttpClientHandler.h
@@ -143,6 +144,7 @@ set (HEADERS
 	src/TelegramBot.h
 	src/TelegramBotHandler.h
 	src/Url.h
+	src/User.h
 	src/Utilities.h
 )
 

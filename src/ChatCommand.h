@@ -21,34 +21,55 @@
 //
 
 
-#ifndef GpsMessage_INCLUDED
-#define GpsMessage_INCLUDED
+#ifndef ChatCommand_INCLUDED
+#define ChatCommand_INCLUDED
 
 
-class GpsMessage
+#include "Application.h"
+
+
+class User;
+
+
+class ChatCommand
 {
 public:
-    GpsMessage()
-        : latitude(0.0)
-        , longitude(0.0)
-        , speed(0.0)
-        , validPosition(false)
+    typedef void(Application::*ChatCommandHandler)(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+
+    enum Access
+    {
+        Default = 0,
+        User = 1,
+        Owner = 2
+    };
+
+    static std::string getAccessString(unsigned int level)
+    {
+        switch (level)
+        {
+        case ChatCommand::Owner:
+            return "owner";
+        case ChatCommand::User:
+            return "user";
+        default:
+            return "unprivileged";
+        }
+    }
+
+    ChatCommand(const std::string& command, const std::string& description, unsigned int access, ChatCommandHandler handler)
+        : command(command)
+        , description(description)
+        , access(access)
+        , handler(handler)
     {
     }
 
-    std::string imei;
-    std::string keyword;
-    std::string phone;
+    std::string command;
+    std::string description;
+    unsigned int access;
 
-    posix_time::ptime trackerTime;
-    posix_time::ptime hostTime;
-
-    double latitude;
-    double longitude;
-    double speed;
-
-    bool validPosition;
+    ChatCommandHandler handler;
 };
 
 
-#endif // GpsMessage_INCLUDED
+#endif // ChatCommand_INCLUDED

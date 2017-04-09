@@ -21,34 +21,27 @@
 //
 
 
-#ifndef GpsMessage_INCLUDED
-#define GpsMessage_INCLUDED
+#ifndef User_INCLUDED
+#define User_INCLUDED
 
 
-class GpsMessage
+#include <tgbot/types/User.h>
+
+
+class User
 {
 public:
-    GpsMessage()
-        : latitude(0.0)
-        , longitude(0.0)
-        , speed(0.0)
-        , validPosition(false)
+    User()
+        : access(0)
+        , tg(0)
+        , valid(false)
     {
     }
 
-    std::string imei;
-    std::string keyword;
-    std::string phone;
-
-    posix_time::ptime trackerTime;
-    posix_time::ptime hostTime;
-
-    double latitude;
-    double longitude;
-    double speed;
-
-    bool validPosition;
+    unsigned int access;
+    TgBot::User::Ptr tg;
+    bool valid;
 };
 
 
-#endif // GpsMessage_INCLUDED
+#endif // User_INCLUDED

@@ -37,6 +37,7 @@
 
 
 struct sqlite3;
+class User;
 
 
 class Application 
@@ -95,19 +96,24 @@ private:
     // ApplicationDatabase
     void openDatabase();
     void closeDatabase();
+    bool dbAddGpsData(const GpsMessage& data);
+    bool dbCreateUser(const User& user);
+    bool dbGetGpsData(std::vector<GpsMessage>& data, unsigned int limit = 0, bool validOnly = false);
+    bool dbSearchUser(User& user);
+    bool dbUpdateUser(const User& user);
 
     // ApplicationCommands
     void fillCommandList();
     void handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleStartCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleHelpCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handlePasswordCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleGetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleSetCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleLoadCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleSaveCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleWhereCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleStatusCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
+    void handleStartCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handleHelpCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handlePasswordCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handleGetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handleSetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handleLoadCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handleSaveCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
 
     static Application* _instance;
 
