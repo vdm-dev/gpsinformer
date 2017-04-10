@@ -132,9 +132,6 @@ private:
 
     TelegramBot _telegram;
 
-    GpsMessage _lastGpsMessage;
-    GpsMessage _lastValidGpsMessage;
-
     std::map<shared_ptr<TcpSession>, shared_ptr<Device>> _devices;
 
     std::string _transmitterBuffer;

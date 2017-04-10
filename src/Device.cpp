@@ -38,7 +38,17 @@ Device::Device(shared_ptr<TcpSession> session)
 Device::~Device()
 {
     if (_authorizedSession == _session)
+    {
         _authorizedSession.reset();
+
+        GpsMessage message;
+
+        message.imei = _imei;
+        message.keyword = "disconnect";
+        message.hostTime = posix_time::second_clock::universal_time();
+
+        Application::instance()->dbAddGpsData(message);
+    }
 }
 
 shared_ptr<TcpSession> Device::authorizedSession()
@@ -140,6 +150,14 @@ bool Device::commandLogon(const std::vector<std::string>& arguments)
 
         _authorizedSession = _session;
 
+        GpsMessage message;
+
+        message.imei = _imei;
+        message.keyword = "connect";
+        message.hostTime = posix_time::second_clock::universal_time();
+
+        Application::instance()->dbAddGpsData(message);
+
         _session->send("LOAD");
     }
 
@@ -188,9 +206,9 @@ bool Device::commandGpsData(const std::vector<std::string>& arguments)
 
     message.hostTime = second_clock::universal_time();
 
-    message.validPosition = (arguments.size() > 11) && (arguments[4] == "F");
+    message.valid = (arguments.size() > 11) && (arguments[4] == "F");
 
-    if (message.validPosition)
+    if (message.valid)
     {
         std::string latitude = arguments[7];
         std::string longitude = arguments[9];

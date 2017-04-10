@@ -146,7 +146,7 @@ bool Application::dbAddGpsData(const GpsMessage& data)
     if (result != SQLITE_OK)
         goto error;
 
-    valid = data.validPosition ? 1 : 0;
+    valid = data.valid ? 1 : 0;
 
     result = sqlite3_bind_int(stmt, 9, valid);
     if (result != SQLITE_OK)
@@ -291,7 +291,7 @@ bool Application::dbGetGpsData(std::vector<GpsMessage>& data, unsigned int limit
             }
             else if (columnName == "valid")
             {
-                gpsMessage.validPosition = sqlite3_column_int(stmt, column) != 0;
+                gpsMessage.valid = sqlite3_column_int(stmt, column) != 0;
             }
         }
 

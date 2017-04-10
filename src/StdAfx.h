@@ -43,6 +43,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
+#include <boost/date_time/c_local_time_adjustor.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>

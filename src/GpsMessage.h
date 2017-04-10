@@ -32,7 +32,7 @@ public:
         : latitude(0.0)
         , longitude(0.0)
         , speed(0.0)
-        , validPosition(false)
+        , valid(false)
     {
     }
 
@@ -47,7 +47,7 @@ public:
     double longitude;
     double speed;
 
-    bool validPosition;
+    bool valid;
 };
 
 

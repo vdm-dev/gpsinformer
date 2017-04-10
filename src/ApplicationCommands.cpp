@@ -271,57 +271,81 @@ void Application::handleSaveCommand(const std::vector<std::string>& command, Use
 
 void Application::handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
 {
-    if (_lastValidGpsMessage.imei.empty() || !_lastValidGpsMessage.validPosition)
+    typedef boost::date_time::c_local_adjustor<posix_time::ptime> timeAdjustor;
+
+    std::vector<GpsMessage> data;
+
+    if (!dbGetGpsData(data, 1, true))
+    {
+        _telegram.sendMessage(originalMessage->from->id, "I have troubles with database connection. Please try again later.");
+        return;
+    }
+
+    if (data.empty())
     {
         _telegram.sendMessage(originalMessage->from->id, "Unfortunately there's no valid location received from tracker.");
         return;
     }
 
-    _telegram.sendLocation(originalMessage->from->id, (float) _lastValidGpsMessage.latitude, (float) _lastValidGpsMessage.longitude);
+    const GpsMessage& gpsMessage = data[0];
+
+    _telegram.sendLocation(originalMessage->from->id, gpsMessage.latitude, gpsMessage.longitude);
 
     std::string output;
 
-    if (!_lastValidGpsMessage.hostTime.is_not_a_date_time())
-        output += "Host Time: *" + posix_time::to_simple_string(_lastValidGpsMessage.hostTime) + "*\n";
+    if (!gpsMessage.hostTime.is_special())
+        output += "Host Time: *" + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.hostTime)) + "*\n";
 
-    if (!_lastValidGpsMessage.trackerTime.is_not_a_date_time())
-        output += "Tracker Time: " + posix_time::to_simple_string(_lastValidGpsMessage.trackerTime) + "\n";
+    if (!gpsMessage.trackerTime.is_special())
+        output += "Tracker Time: " + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.trackerTime)) + "\n";
 
-    output += "Speed: " + lexical_cast<std::string>(_lastValidGpsMessage.speed) + "\n";
+    output += "Speed: " + lexical_cast<std::string>(gpsMessage.speed) + "\n";
 
-    if (!_lastValidGpsMessage.phone.empty())
-        output += "Phone: *" + _lastValidGpsMessage.phone + "*\n";
+    if (!gpsMessage.phone.empty())
+        output += "Phone: *" + gpsMessage.phone + "*\n";
 
-    output += "Status: " + _lastValidGpsMessage.keyword + "\n";
+    output += "Status: " + gpsMessage.keyword + "\n";
 
     _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
 }
 
 void Application::handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
 {
-    if (_lastGpsMessage.imei.empty())
+    typedef boost::date_time::c_local_adjustor<posix_time::ptime> timeAdjustor;
+
+    std::vector<GpsMessage> data;
+
+    if (!dbGetGpsData(data, 1, true))
+    {
+        _telegram.sendMessage(originalMessage->from->id, "I have troubles with database connection. Please try again later.");
+        return;
+    }
+
+    if (data.empty())
     {
         _telegram.sendMessage(originalMessage->from->id, "Unfortunately there's no data received from tracker.");
         return;
     }
 
-    if (_lastGpsMessage.validPosition)
-        _telegram.sendLocation(originalMessage->from->id, (float) _lastGpsMessage.latitude, (float) _lastGpsMessage.longitude);
+    const GpsMessage& gpsMessage = data[0];
+
+    if (gpsMessage.valid)
+        _telegram.sendLocation(originalMessage->from->id, gpsMessage.latitude, gpsMessage.longitude);
 
     std::string output;
 
-    if (!_lastGpsMessage.hostTime.is_not_a_date_time())
-        output += "Host Time: *" + posix_time::to_simple_string(_lastGpsMessage.hostTime) + "*\n";
+    if (!gpsMessage.hostTime.is_special())
+        output += "Host Time: *" + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.hostTime)) + "*\n";
 
-    if (!_lastGpsMessage.trackerTime.is_not_a_date_time())
-        output += "Tracker Time: " + posix_time::to_simple_string(_lastGpsMessage.trackerTime) + "\n";
+    if (!gpsMessage.trackerTime.is_special())
+        output += "Tracker Time: " + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.trackerTime)) + "\n";
 
-    output += "Speed: " + lexical_cast<std::string>(_lastGpsMessage.speed) + "\n";
+    output += "Speed: " + lexical_cast<std::string>(gpsMessage.speed) + "\n";
 
-    if (!_lastGpsMessage.phone.empty())
-        output += "Phone: *" + _lastGpsMessage.phone + "*\n";
+    if (!gpsMessage.phone.empty())
+        output += "Phone: *" + gpsMessage.phone + "*\n";
 
-    output += "Status: " + _lastGpsMessage.keyword + "\n";
+    output += "Status: " + gpsMessage.keyword + "\n";
 
     _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
 }

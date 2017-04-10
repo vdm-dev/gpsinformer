@@ -98,7 +98,7 @@ void TelegramBot::sendMessage(int64_t chatId, const std::string& text, ParseMode
     makeRequest("sendMessage", arguments, TAG_SEND_MESSAGE);
 }
 
-void TelegramBot::sendLocation(int64_t chatId, float latitude, float longitude, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+void TelegramBot::sendLocation(int64_t chatId, double latitude, double longitude, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
 {
     std::vector<HttpReqArg> arguments;
 
@@ -118,7 +118,7 @@ void TelegramBot::sendLocation(int64_t chatId, float latitude, float longitude, 
     makeRequest("sendLocation", arguments, TAG_SEND_LOCATION);
 }
 
-void TelegramBot::sendVenue(int64_t chatId, float latitude, float longitude, const std::string& title, const std::string& address, const std::string& foursquareId, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+void TelegramBot::sendVenue(int64_t chatId, double latitude, double longitude, const std::string& title, const std::string& address, const std::string& foursquareId, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
 {
     std::vector<HttpReqArg> arguments;
 
