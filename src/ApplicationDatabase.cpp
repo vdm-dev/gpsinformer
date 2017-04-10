@@ -31,6 +31,19 @@
 #include <sqlite3.h>
 
 
+inline boost::posix_time::ptime fromUnixTime(uint64_t t)
+{
+    boost::posix_time::ptime start(boost::gregorian::date(1970, 1, 1));
+    return start + boost::posix_time::seconds(static_cast<long>(t));
+}
+
+inline uint64_t toUnixTime(boost::posix_time::ptime pt)
+{
+    boost::posix_time::time_duration dur = pt - boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1));
+    return uint64_t(dur.total_seconds());
+}
+
+
 void Application::openDatabase()
 {
     int result = 0;
@@ -93,8 +106,6 @@ void Application::closeDatabase()
 
 bool Application::dbAddGpsData(const GpsMessage& data)
 {
-    using namespace boost::posix_time;
-
     int result = 0;
     sqlite3_stmt *stmt = 0;
 
@@ -121,14 +132,14 @@ bool Application::dbAddGpsData(const GpsMessage& data)
         goto error;
 
     if (!data.trackerTime.is_special())
-        trackerTime = to_time_t(data.trackerTime);
+        trackerTime = toUnixTime(data.trackerTime);
 
     result = sqlite3_bind_int64(stmt, 4, trackerTime);
     if (result != SQLITE_OK)
         goto error;
 
     if (!data.hostTime.is_special())
-        hostTime = to_time_t(data.hostTime);
+        hostTime = toUnixTime(data.hostTime);
 
     result = sqlite3_bind_int64(stmt, 5, hostTime);
     if (result != SQLITE_OK)
@@ -268,14 +279,14 @@ bool Application::dbGetGpsData(std::vector<GpsMessage>& data, unsigned int limit
                 uint64_t value = sqlite3_column_int64(stmt, column);
 
                 if (value)
-                    gpsMessage.trackerTime = posix_time::from_time_t(value);
+                    gpsMessage.trackerTime = fromUnixTime(value);
             }
             else if (columnName == "host_time")
             {
                 uint64_t value = sqlite3_column_int64(stmt, column);
 
                 if (value)
-                    gpsMessage.hostTime = posix_time::from_time_t(value);
+                    gpsMessage.hostTime = fromUnixTime(value);
             }
             else if (columnName == "latitude")
             {
