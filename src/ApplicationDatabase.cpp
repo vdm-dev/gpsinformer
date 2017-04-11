@@ -238,6 +238,8 @@ bool Application::dbGetGpsData(std::vector<GpsMessage>& data, unsigned int limit
     if (validOnly)
         sql += " WHERE valid = 1";
 
+    sql += " ORDER BY host_time DESC";
+
     if (limit)
         sql += " LIMIT ?";
 
