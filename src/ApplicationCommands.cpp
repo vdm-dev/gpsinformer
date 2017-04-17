@@ -315,7 +315,7 @@ void Application::handleStatusCommand(const std::vector<std::string>& command, U
 
     std::vector<GpsMessage> data;
 
-    if (!dbGetGpsData(data, 1, true))
+    if (!dbGetGpsData(data, 1, false))
     {
         _telegram.sendMessage(originalMessage->from->id, "I have troubles with database connection. Please try again later.");
         return;
