@@ -14,7 +14,8 @@ if (UNIX OR CYGWIN)
 endif ()
 
 
-add_definitions (-DBOOST_LOG_DYN_LINK)
+# Uncomment this if Boost static linking will fail
+# add_definitions (-DBOOST_LOG_DYN_LINK)
 
 if (MSVC)
 	add_definitions (-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
@@ -154,7 +155,7 @@ find_package (Threads REQUIRED)
 
 # OpenSSL
 if (WIN32)
-	set (OPENSSL_USE_STATIC_LIBS TRUE)
+	set (OPENSSL_USE_STATIC_LIBS FALSE)
 	set (OPENSSL_ROOT_DIR dep/openssl)
 endif ()
 
@@ -163,6 +164,7 @@ find_package (OpenSSL REQUIRED)
 
 # Boost
 set (Boost_USE_MULTITHREADED ON)
+set (Boost_USE_STATIC_LIBS ON)
 find_package (Boost REQUIRED COMPONENTS system log log_setup date_time thread filesystem program_options REQUIRED)
 
 
