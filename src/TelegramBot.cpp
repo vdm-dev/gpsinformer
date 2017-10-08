@@ -31,12 +31,14 @@
 
 
 TelegramBot::TelegramBot(asio::io_service& ioService, TelegramBotHandler* handler)
-    : _client(ioService)
-    , _timer(ioService)
-    , _handler(handler)
+    : _timer(ioService)
+    , _client(ioService)
+    , _apiUrl()
+    , _token()
     , _lastUpdateId(0)
     , _timerDelay(0)
     , _enabled(false)
+    , _handler(handler)
 {
     _client.setEventHandler(this);
 }

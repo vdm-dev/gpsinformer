@@ -31,13 +31,14 @@
 Application* Application::_instance = 0;
 
 Application::Application()
-    : _receiverTimer(_ioService)
+    : _ioService()
+    , _receiverTimer(_ioService)
     , _transmitterTimer(_ioService)
     , _receiver(_ioService)
     , _transmitter(_ioService)
-    , _transmitterAuthorized(false)
     , _telegram(_ioService)
     , _database(0)
+    , _transmitterAuthorized(false)
 {
     _instance = this;
 

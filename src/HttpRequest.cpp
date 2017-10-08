@@ -25,16 +25,18 @@
 
 
 HttpRequest::HttpRequest()
-    : _longPoll(false)
+    : _url()
+    , _data()
     , _tag(0)
+    , _longPoll(false)
 {
 }
 
 HttpRequest::HttpRequest(const Url& url, const std::string& data, bool longPoll, unsigned int tag)
     : _url(url)
     , _data(data)
-    , _longPoll(longPoll)
     , _tag(tag)
+    , _longPoll(longPoll)
 {
 }
 
