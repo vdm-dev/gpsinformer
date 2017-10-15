@@ -34,7 +34,7 @@ class User;
 class ChatCommand
 {
 public:
-    typedef void(Application::*ChatCommandHandler)(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    typedef void(Application::*ChatCommandHandler)(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
 
     enum Access
     {

@@ -18,8 +18,9 @@ class InputTextMessageContent : public InputMessageContent {
 public:
 	typedef std::shared_ptr<InputTextMessageContent> Ptr;
 
-	InputTextMessageContent():
-		InputMessageContent("InputTextMessageContent")
+	InputTextMessageContent()
+        : InputMessageContent("InputTextMessageContent")
+        , disableWebPagePreview(false)
 	{}
 
 	/**

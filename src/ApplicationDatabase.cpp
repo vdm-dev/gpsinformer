@@ -37,7 +37,7 @@ inline boost::posix_time::ptime fromUnixTime(uint64_t t)
     return start + boost::posix_time::seconds(static_cast<long>(t));
 }
 
-inline uint64_t toUnixTime(boost::posix_time::ptime pt)
+inline uint64_t toUnixTime(const boost::posix_time::ptime& pt)
 {
     boost::posix_time::time_duration dur = pt - boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1));
     return uint64_t(dur.total_seconds());

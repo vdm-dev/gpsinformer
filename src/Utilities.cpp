@@ -52,7 +52,7 @@ std::string treeToString(const property_tree::ptree& tree, const std::string& fi
     return result;
 }
 
-bool wildcardMatch(const std::string string, const std::string pattern, size_t sOffset, size_t pOffset)
+bool wildcardMatch(const std::string& string, const std::string& pattern, size_t sOffset, size_t pOffset)
 {
     while (pOffset < pattern.size())
     {

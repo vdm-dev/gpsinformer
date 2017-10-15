@@ -53,7 +53,7 @@ void Application::fillCommandList()
 
 }
 
-void Application::handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage)
+void Application::handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr& originalMessage)
 {
     if (command.empty())
         return;
@@ -82,7 +82,7 @@ void Application::handleChatCommand(const std::vector<std::string>& command, con
     }
 }
 
-void Application::handleStartCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handleStartCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     std::string output;
 
@@ -101,7 +101,7 @@ void Application::handleStartCommand(const std::vector<std::string>& command, Us
     return;
 }
 
-void Application::handleHelpCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handleHelpCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     std::string output = "You can control me by sending these commands:\n\n";
 
@@ -118,7 +118,7 @@ void Application::handleHelpCommand(const std::vector<std::string>& command, Use
     _telegram.sendMessage(originalMessage->from->id, output);
 }
 
-void Application::handlePasswordCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handlePasswordCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     if (command.size() != 2)
     {
@@ -144,14 +144,14 @@ void Application::handlePasswordCommand(const std::vector<std::string>& command,
     {
         if (access > user.access)
         {
-            std::string oldAccessString = ChatCommand::getAccessString(user.access);
+            unsigned int oldAccess = user.access;
 
             user.access = access;
 
             if (dbUpdateUser(user))
             {
                 output = "Congratulations!\nYour access level has been increased from *";
-                output += oldAccessString;
+                output += ChatCommand::getAccessString(oldAccess);
                 output += "* to *";
                 output += ChatCommand::getAccessString(access);
                 output += "*.";
@@ -198,7 +198,7 @@ void Application::handlePasswordCommand(const std::vector<std::string>& command,
     return;
 }
 
-void Application::handleGetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handleGetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     std::string filter;
 
@@ -208,7 +208,7 @@ void Application::handleGetCommand(const std::vector<std::string>& command, User
     _telegram.sendMessage(originalMessage->from->id, Utilities::treeToString(_settings, filter));
 }
 
-void Application::handleSetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handleSetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     std::string answerString;
 
@@ -221,11 +221,13 @@ void Application::handleSetCommand(const std::vector<std::string>& command, User
 
         if (option)
         {
-            if (option.get().empty())
-            {
-                std::string value = option.get().get_value("");
+            property_tree::ptree& child = option.get();
 
-                option.get().put_value(newValue);
+            if (child.empty())
+            {
+                std::string value = child.get_value("");
+
+                child.put_value(newValue);
 
                 answerString = "Value of the key \"" + key + "\" has been changed from \"" + value + "\" to \"" + newValue + "\"";
             }
@@ -253,7 +255,7 @@ void Application::handleSetCommand(const std::vector<std::string>& command, User
     _telegram.sendMessage(originalMessage->from->id, answerString);
 }
 
-void Application::handleLoadCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handleLoadCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     std::string answerString = loadConfiguration() ? 
         "The configuration has been successfully reloaded" : "The configuration reload failed";
@@ -261,7 +263,7 @@ void Application::handleLoadCommand(const std::vector<std::string>& command, Use
     _telegram.sendMessage(originalMessage->from->id, answerString);
 }
 
-void Application::handleSaveCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handleSaveCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     std::string answerString = saveConfiguration() ? 
         "The configuration has been successfully saved" : "The configuration save failed";
@@ -269,7 +271,7 @@ void Application::handleSaveCommand(const std::vector<std::string>& command, Use
     _telegram.sendMessage(originalMessage->from->id, answerString);
 }
 
-void Application::handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     typedef boost::date_time::c_local_adjustor<posix_time::ptime> timeAdjustor;
 
@@ -309,7 +311,7 @@ void Application::handleWhereCommand(const std::vector<std::string>& command, Us
     _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
 }
 
-void Application::handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage)
+void Application::handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
     typedef boost::date_time::c_local_adjustor<posix_time::ptime> timeAdjustor;
 

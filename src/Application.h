@@ -86,12 +86,12 @@ private:
 
     // ApplicationTelegram
     void startTelegram();
-    void handleInlineQuery(const TgBot::InlineQuery::Ptr inlineQuery);
-    void handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr chosenInlineResult);
-    void handleCallbackQuery(const TgBot::CallbackQuery::Ptr callbackQuery);
-    void handleMessage(const TgBot::Message::Ptr message);
-    void handleOwnMessage(const TgBot::Message::Ptr message);
-    void handleGetMe(const TgBot::User::Ptr user);
+    void handleInlineQuery(const TgBot::InlineQuery::Ptr& inlineQuery);
+    void handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr& chosenInlineResult);
+    void handleCallbackQuery(const TgBot::CallbackQuery::Ptr& callbackQuery);
+    void handleMessage(const TgBot::Message::Ptr& message);
+    void handleOwnMessage(const TgBot::Message::Ptr& message);
+    void handleGetMe(const TgBot::User::Ptr& user);
 
     // ApplicationDatabase
     void openDatabase();
@@ -104,16 +104,16 @@ private:
 
     // ApplicationCommands
     void fillCommandList();
-    void handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr originalMessage);
-    void handleStartCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
-    void handleHelpCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
-    void handlePasswordCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
-    void handleGetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
-    void handleSetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
-    void handleLoadCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
-    void handleSaveCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
-    void handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
-    void handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr originalMessage);
+    void handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr& originalMessage);
+    void handleStartCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleHelpCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handlePasswordCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleGetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleSetCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleLoadCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleSaveCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
 
     static Application* _instance;
 

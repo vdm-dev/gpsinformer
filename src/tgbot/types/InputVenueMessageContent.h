@@ -19,8 +19,10 @@ class InputVenueMessageContent : public InputMessageContent {
 public:
 	typedef std::shared_ptr<InputVenueMessageContent> Ptr;
 
-	InputVenueMessageContent() :
-		InputMessageContent("InputVenueMessageContent")
+	InputVenueMessageContent()
+		: InputMessageContent("InputVenueMessageContent")
+        , latitude(0.0)
+        , longitude(0.0)
 	{}
 
 	/**

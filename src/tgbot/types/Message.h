@@ -51,13 +51,19 @@ class Message {
 public:
 	typedef std::shared_ptr<Message> Ptr;
 
-	Message(){
-		deleteChatPhoto = false;
-		groupChatCreated = false;
-		supergroupChatCreated = false;
-		channelChatCreated = false;
-		migrateToChatId = 0;
-		migrateFromChatId = 0;
+	Message()
+        : messageId(0)
+        , date(0)
+        , forwardFromMessageId(0)
+        , forwardDate(0)
+        , editDate(0)
+        , deleteChatPhoto(false)
+        , groupChatCreated(false)
+        , supergroupChatCreated(false)
+        , channelChatCreated(false)
+        , migrateToChatId(0)
+        , migrateFromChatId(0)
+    {
 	}
 
 	/**

@@ -135,7 +135,7 @@ bool Device::commandLogon(const std::vector<std::string>& arguments)
 
     if ((_imei.size() != 20) || (_imei.find("imei:") != 0))
     {
-        _imei = "";
+        _imei.clear();
 
         return false;
     }

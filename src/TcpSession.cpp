@@ -116,10 +116,12 @@ void TcpSession::handleRead(size_t size, const system::error_code& error)
         return;
     }
 
-    std::string data(_readBuffer.begin(), _readBuffer.begin() + size);
-
     if (_handler)
+    {
+        std::string data(_readBuffer.begin(), _readBuffer.begin() + size);
+
         _handler->handleTcpSessionReceivedData(shared_from_this(), data);
+    }
 
     read();
 }

@@ -58,10 +58,10 @@ public:
     void setReconnectDelay(int64_t delay);
 
     void getMe();
-    void sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode = ParseMode::None, bool disableWebPagePreview = false, bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr replyMarkup = TgBot::GenericReply::Ptr());
-    void sendLocation(int64_t chatId, double latitude, double longitude, bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr replyMarkup = TgBot::GenericReply::Ptr());
-    void sendVenue(int64_t chatId, double latitude, double longitude, const std::string& title, const std::string& address, const std::string& foursquareId = std::string(), bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr replyMarkup = TgBot::GenericReply::Ptr());
-    void sendContact(int64_t chatId, const std::string& phoneNumber, const std::string& firstName, const std::string& lastName = std::string(), bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr replyMarkup = TgBot::GenericReply::Ptr());
+    void sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode = ParseMode::None, bool disableWebPagePreview = false, bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr& replyMarkup = TgBot::GenericReply::Ptr());
+    void sendLocation(int64_t chatId, double latitude, double longitude, bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr& replyMarkup = TgBot::GenericReply::Ptr());
+    void sendVenue(int64_t chatId, double latitude, double longitude, const std::string& title, const std::string& address, const std::string& foursquareId = std::string(), bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr& replyMarkup = TgBot::GenericReply::Ptr());
+    void sendContact(int64_t chatId, const std::string& phoneNumber, const std::string& firstName, const std::string& lastName = std::string(), bool disableNotification = false, int32_t replyToMessageId = 0, const TgBot::GenericReply::Ptr& replyMarkup = TgBot::GenericReply::Ptr());
 
 
 private:
@@ -80,7 +80,7 @@ private:
 
     void makeRequest(const std::string& method, const std::vector<HttpReqArg>& arguments, unsigned int tag = 0, bool longPoll = false);
 
-    void handleUpdate(const TgBot::Update::Ptr update);
+    void handleUpdate(const TgBot::Update::Ptr& update);
 
     void handleHttpClientError(const system::error_code& error);
     void handleHttpClientIdle();

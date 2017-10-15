@@ -66,7 +66,7 @@ void TelegramBot::getMe()
     makeRequest("getMe", arguments, TAG_GET_ME);
 }
 
-void TelegramBot::sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode, bool disableWebPagePreview, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+void TelegramBot::sendMessage(int64_t chatId, const std::string& text, ParseMode parseMode, bool disableWebPagePreview, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr& replyMarkup)
 {
     std::vector<HttpReqArg> arguments;
 
@@ -100,7 +100,7 @@ void TelegramBot::sendMessage(int64_t chatId, const std::string& text, ParseMode
     makeRequest("sendMessage", arguments, TAG_SEND_MESSAGE);
 }
 
-void TelegramBot::sendLocation(int64_t chatId, double latitude, double longitude, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+void TelegramBot::sendLocation(int64_t chatId, double latitude, double longitude, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr& replyMarkup)
 {
     std::vector<HttpReqArg> arguments;
 
@@ -120,7 +120,7 @@ void TelegramBot::sendLocation(int64_t chatId, double latitude, double longitude
     makeRequest("sendLocation", arguments, TAG_SEND_LOCATION);
 }
 
-void TelegramBot::sendVenue(int64_t chatId, double latitude, double longitude, const std::string& title, const std::string& address, const std::string& foursquareId, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+void TelegramBot::sendVenue(int64_t chatId, double latitude, double longitude, const std::string& title, const std::string& address, const std::string& foursquareId, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr& replyMarkup)
 {
     std::vector<HttpReqArg> arguments;
 
@@ -145,7 +145,7 @@ void TelegramBot::sendVenue(int64_t chatId, double latitude, double longitude, c
     makeRequest("sendVenue", arguments, TAG_SEND_VENUE);
 }
 
-void TelegramBot::sendContact(int64_t chatId, const std::string& phoneNumber, const std::string& firstName, const std::string& lastName, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr replyMarkup)
+void TelegramBot::sendContact(int64_t chatId, const std::string& phoneNumber, const std::string& firstName, const std::string& lastName, bool disableNotification, int32_t replyToMessageId, const TgBot::GenericReply::Ptr& replyMarkup)
 {
     std::vector<HttpReqArg> arguments;
 
@@ -199,7 +199,7 @@ void TelegramBot::makeRequest(const std::string& method, const std::vector<HttpR
     _client.sendRequest(request);
 }
 
-void TelegramBot::handleUpdate(const TgBot::Update::Ptr update)
+void TelegramBot::handleUpdate(const TgBot::Update::Ptr& update)
 {
     if (!_handler)
         return;

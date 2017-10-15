@@ -50,22 +50,22 @@ void Application::startTelegram()
     _telegram.getMe();
 }
 
-void Application::handleInlineQuery(const TgBot::InlineQuery::Ptr inlineQuery)
+void Application::handleInlineQuery(const TgBot::InlineQuery::Ptr& inlineQuery)
 {
 
 }
 
-void Application::handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr chosenInlineResult)
+void Application::handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr& chosenInlineResult)
 {
 
 }
 
-void Application::handleCallbackQuery(const TgBot::CallbackQuery::Ptr callbackQuery)
+void Application::handleCallbackQuery(const TgBot::CallbackQuery::Ptr& callbackQuery)
 {
 
 }
 
-void Application::handleMessage(const TgBot::Message::Ptr message)
+void Application::handleMessage(const TgBot::Message::Ptr& message)
 {
     if (!message)
         return;
@@ -126,12 +126,12 @@ void Application::handleMessage(const TgBot::Message::Ptr message)
     handleChatCommand(command, message);
 }
 
-void Application::handleOwnMessage(const TgBot::Message::Ptr message)
+void Application::handleOwnMessage(const TgBot::Message::Ptr& message)
 {
 
 }
 
-void Application::handleGetMe(const TgBot::User::Ptr user)
+void Application::handleGetMe(const TgBot::User::Ptr& user)
 {
 
 }

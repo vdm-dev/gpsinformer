@@ -150,10 +150,12 @@ void SslClient::handleRead(size_t size, const system::error_code& error)
         return;
     }
 
-    std::string data(_readBuffer.begin(), _readBuffer.begin() + size);
-
     if (_handler)
+    {
+        std::string data(_readBuffer.begin(), _readBuffer.begin() + size);
+
         _handler->handleTcpClientReceivedData(this, data);
+    }
 
 
     asio::async_read(_socket, asio::buffer(_readBuffer, _readBuffer.size()), asio::transfer_at_least(1),
