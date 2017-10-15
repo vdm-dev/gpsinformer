@@ -37,7 +37,6 @@ TcpServer::TcpServer(asio::io_service& ioService, TcpSessionHandler* handler)
 
 TcpServer::~TcpServer()
 {
-    std::cout << "[TcpServer] Destructor" << std::endl;
 }
 
 void TcpServer::listen(const std::string& address, unsigned short port)

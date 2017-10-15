@@ -115,6 +115,9 @@ private:
     void handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
     void handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
 
+    // ApplicationEvents
+    void handleTrackerEvent(const GpsMessage& data);
+
     static Application* _instance;
 
     filesystem::path _applicationPath;

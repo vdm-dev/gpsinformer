@@ -48,6 +48,7 @@ void TcpSession::cleanup()
 
     system::error_code error;
     _socket.close(error);
+    _endpoint = asio::ip::tcp::endpoint();
 
     _active = false;
 }
@@ -84,6 +85,10 @@ void TcpSession::send(const std::string& data)
 void TcpSession::start()
 {
     _active = true;
+
+    system::error_code error;
+
+    _endpoint = _socket.remote_endpoint(error);
 
     _server._sessions.insert(shared_from_this());
 

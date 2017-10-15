@@ -47,7 +47,7 @@ Device::~Device()
         message.keyword = "disconnect";
         message.hostTime = posix_time::second_clock::universal_time();
 
-        Application::instance()->dbAddGpsData(message);
+        Application::instance()->handleTrackerEvent(message);
     }
 }
 
@@ -156,7 +156,7 @@ bool Device::commandLogon(const std::vector<std::string>& arguments)
         message.keyword = "connect";
         message.hostTime = posix_time::second_clock::universal_time();
 
-        Application::instance()->dbAddGpsData(message);
+        Application::instance()->handleTrackerEvent(message);
 
         _session->send("LOAD");
     }
@@ -254,7 +254,7 @@ bool Device::commandGpsData(const std::vector<std::string>& arguments)
             message.longitude *= -1.0;
     }
 
-    Application::instance()->dbAddGpsData(message);
+    Application::instance()->handleTrackerEvent(message);
 
     return true;
 }

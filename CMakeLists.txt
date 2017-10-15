@@ -107,6 +107,7 @@ set (SOURCES
 	src/Application.cpp
 	src/ApplicationCommands.cpp
 	src/ApplicationDatabase.cpp
+	src/ApplicationEvents.cpp
 	src/ApplicationReceiver.cpp
 	src/ApplicationTelegram.cpp
 	src/ApplicationTransmitter.cpp

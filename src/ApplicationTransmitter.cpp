@@ -67,7 +67,7 @@ void Application::handleTcpClientConnect(TcpClient* client)
     if (imei.size())
     {
         BOOST_LOG_TRIVIAL(debug) << "Transmitter is sending authentication message";
-        _transmitter.send("##,imei:" + imei +",A;\r\n");
+        _transmitter.send("##,imei:" + imei + ",A;\r\n");
     }
 }
 

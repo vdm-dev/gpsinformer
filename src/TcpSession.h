@@ -42,6 +42,7 @@ public:
     void start();
 
     asio::ip::tcp::socket& socket();
+    asio::ip::tcp::endpoint endpoint() const;
 
     bool isActive() const;
 
@@ -54,6 +55,7 @@ private:
 
     asio::io_service& _ioService;
     asio::ip::tcp::socket _socket;
+    asio::ip::tcp::endpoint _endpoint;
 
     std::vector<char> _readBuffer;
     std::deque<std::string> _writeQueue;
@@ -69,6 +71,11 @@ private:
 inline asio::ip::tcp::socket& TcpSession::socket()
 {
     return _socket;
+}
+
+inline asio::ip::tcp::endpoint TcpSession::endpoint() const
+{
+    return _endpoint;
 }
 
 inline bool TcpSession::isActive() const

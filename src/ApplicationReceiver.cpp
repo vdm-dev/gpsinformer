@@ -69,13 +69,13 @@ void Application::handleTcpSessionConnect(shared_ptr<TcpSession> session)
 {
     _devices[session] = make_shared<Device>(session);
 
+
     system::error_code error;
 
-    std::string address = "unknown";
+    std::string address = session->endpoint().address().to_string(error);
 
-    asio::ip::tcp::endpoint endpoint = session->socket().remote_endpoint(error);
-    if (!error)
-        address = endpoint.address().to_string(error);
+    if (error)
+        address = "unknown";
 
     BOOST_LOG_TRIVIAL(info) << "Client <" << address << "> connected";
 }
@@ -92,11 +92,10 @@ void Application::handleTcpSessionDisconnect(shared_ptr<TcpSession> session, Tcp
 
     system::error_code error;
 
-    std::string address = "unknown";
+    std::string address = session->endpoint().address().to_string(error);
 
-    asio::ip::tcp::endpoint endpoint = session->socket().remote_endpoint(error);
-    if (!error)
-        address = endpoint.address().to_string(error);
+    if (error)
+        address = "unknown";
 
     BOOST_LOG_TRIVIAL(info) << "Client <" << address << "> disconnected";
 }
