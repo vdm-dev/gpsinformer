@@ -87,6 +87,7 @@ private:
 
     // ApplicationTelegram
     void startTelegram();
+    void sendGpsStatus(const GpsMessage& gpsMessage, int32_t userId);
     void handleInlineQuery(const TgBot::InlineQuery::Ptr& inlineQuery);
     void handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr& chosenInlineResult);
     void handleCallbackQuery(const TgBot::CallbackQuery::Ptr& callbackQuery);
@@ -98,6 +99,7 @@ private:
     void openDatabase();
     void closeDatabase();
     void dbRestoreSettings();
+    bool dbSaveSettings();
     bool dbAddGpsData(const GpsMessage& data);
     bool dbCreateUser(const User& user);
     bool dbGetGpsData(std::vector<GpsMessage>& data, unsigned int limit = 0, bool validOnly = false);
@@ -116,6 +118,8 @@ private:
     void handleSaveCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
     void handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
     void handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleArmCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
+    void handleDisarmCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage);
 
     // ApplicationEvents
     void handleTrackerEvent(const GpsMessage& data);

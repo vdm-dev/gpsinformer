@@ -121,6 +121,95 @@ void Application::dbRestoreSettings()
         if (!data.empty())
             _lastMessage = data[0];
     }
+
+    _userSettings.clear();
+
+    UserSettings settingsRow;
+
+    int result = 0;
+    sqlite3_stmt *stmt = 0;
+
+    const char* sql = "SELECT * FROM settings";
+
+    result = sqlite3_prepare_v2(_database, sql, -1, &stmt, 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    result = sqlite3_step(stmt);
+
+    while (result == SQLITE_ROW)
+    {
+        int columns = sqlite3_column_count(stmt);
+
+        for (int column = 0; column < columns; ++column)
+        {
+            std::string columnName = sqlite3_column_name(stmt, column);
+
+            if (columnName == "id")
+            {
+                settingsRow.id = sqlite3_column_int(stmt, column);
+            }
+            else if (columnName == "status")
+            {
+                settingsRow.status = sqlite3_column_int(stmt, column);
+            }
+        }
+
+        _userSettings.push_back(settingsRow);
+
+        result = sqlite3_step(stmt);
+    }
+
+    if ((result != SQLITE_DONE) && (result != SQLITE_OK))
+        goto error;
+
+    result = sqlite3_finalize(stmt);
+    if (result != SQLITE_OK)
+        goto error;
+
+    return;
+
+error:
+    BOOST_LOG_TRIVIAL(debug) << "Database error: " << sqlite3_errmsg(_database);
+}
+
+bool Application::dbSaveSettings()
+{
+    int result = 0;
+    sqlite3_stmt *stmt = 0;
+
+    result = sqlite3_exec(_database, "DELETE FROM settings", 0, 0, 0);
+    if (result != SQLITE_OK)
+        goto error;
+
+    const char* sql = "INSERT INTO settings (id, status) VALUES (?, ?)";
+
+    for (size_t i = 0; i < _userSettings.size(); ++i)
+    {
+        result = sqlite3_prepare_v2(_database, sql, -1, &stmt, 0);
+        if (result != SQLITE_OK)
+            goto error;
+
+        result = sqlite3_bind_int(stmt, 1, _userSettings[i].id);
+        if (result != SQLITE_OK)
+            goto error;
+
+        result = sqlite3_bind_int(stmt, 2, _userSettings[i].status);
+        if (result != SQLITE_OK)
+            goto error;
+
+        result = sqlite3_step(stmt);
+        if ((result != SQLITE_OK) && (result != SQLITE_DONE))
+            goto error;
+
+        sqlite3_finalize(stmt);
+    }
+
+    return true;
+
+error:
+    BOOST_LOG_TRIVIAL(debug) << "Database error: " << sqlite3_errmsg(_database);
+    return false;
 }
 
 bool Application::dbAddGpsData(const GpsMessage& data)
@@ -193,7 +282,6 @@ bool Application::dbAddGpsData(const GpsMessage& data)
 error:
     BOOST_LOG_TRIVIAL(debug) << "Database error: " << sqlite3_errmsg(_database);
     return false;
-
 }
 
 bool Application::dbCreateUser(const User& user)

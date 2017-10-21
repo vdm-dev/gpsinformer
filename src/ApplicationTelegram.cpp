@@ -50,6 +50,31 @@ void Application::startTelegram()
     _telegram.getMe();
 }
 
+void Application::sendGpsStatus(const GpsMessage & gpsMessage, int32_t userId)
+{
+    typedef boost::date_time::c_local_adjustor<posix_time::ptime> timeAdjustor;
+
+    if (gpsMessage.valid)
+        _telegram.sendLocation(userId, gpsMessage.latitude, gpsMessage.longitude);
+
+    std::string output;
+
+    if (!gpsMessage.hostTime.is_special())
+        output += "Host Time: *" + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.hostTime)) + "*\n";
+
+    if (!gpsMessage.trackerTime.is_special())
+        output += "Tracker Time: " + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.trackerTime)) + "\n";
+
+    output += "Speed: " + lexical_cast<std::string>(gpsMessage.speed) + "\n";
+
+    if (!gpsMessage.phone.empty())
+        output += "Phone: *" + gpsMessage.phone + "*\n";
+
+    output += "Status: " + gpsMessage.keyword + "\n";
+
+    _telegram.sendMessage(userId, output, TelegramBot::Markdown);
+}
+
 void Application::handleInlineQuery(const TgBot::InlineQuery::Ptr& inlineQuery)
 {
 

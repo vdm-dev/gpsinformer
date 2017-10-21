@@ -28,5 +28,29 @@
 
 void Application::handleTrackerEvent(const GpsMessage& data)
 {
+    for (size_t i = 0; i < _userSettings.size(); ++i)
+    {
+        switch (_userSettings[i].status)
+        {
+        case UserSettings::Insane:
+            sendGpsStatus(data, _userSettings[i].id);
+            break;
+        case UserSettings::Paranoid:
+            if (data.keyword != _lastMessage.keyword)
+                sendGpsStatus(data, _userSettings[i].id);
+            break;
+        case UserSettings::Alert:
+            if (data.keyword != _lastMessage.keyword &&
+                !iequals(data.keyword, "connect") &&
+                !iequals(data.keyword, "disconnect"))
+            {
+                sendGpsStatus(data, _userSettings[i].id);
+            }
+            break;
+        }
+    }
+
     dbAddGpsData(data);
+
+    _lastMessage = data;
 }

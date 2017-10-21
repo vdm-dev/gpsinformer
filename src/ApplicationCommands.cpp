@@ -51,6 +51,9 @@ void Application::fillCommandList()
     chatCommands.push_back(ChatCommand("/where", "send last valid location", ChatCommand::User, &Application::handleWhereCommand));
     chatCommands.push_back(ChatCommand("/status", "send last status of tracking device", ChatCommand::User, &Application::handleStatusCommand));
 
+    // Alert
+    chatCommands.push_back(ChatCommand("/arm", "set the system in armed, paranoid or insane mode", ChatCommand::Owner, &Application::handleArmCommand));
+    chatCommands.push_back(ChatCommand("/disarm", "disable armed, paranoid or insane mode", ChatCommand::Owner, &Application::handleDisarmCommand));
 }
 
 void Application::handleChatCommand(const std::vector<std::string>& command, const TgBot::Message::Ptr& originalMessage)
@@ -273,8 +276,6 @@ void Application::handleSaveCommand(const std::vector<std::string>& command, Use
 
 void Application::handleWhereCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
-    typedef boost::date_time::c_local_adjustor<posix_time::ptime> timeAdjustor;
-
     std::vector<GpsMessage> data;
 
     if (!dbGetGpsData(data, 1, true))
@@ -289,32 +290,11 @@ void Application::handleWhereCommand(const std::vector<std::string>& command, Us
         return;
     }
 
-    const GpsMessage& gpsMessage = data[0];
-
-    _telegram.sendLocation(originalMessage->from->id, gpsMessage.latitude, gpsMessage.longitude);
-
-    std::string output;
-
-    if (!gpsMessage.hostTime.is_special())
-        output += "Host Time: *" + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.hostTime)) + "*\n";
-
-    if (!gpsMessage.trackerTime.is_special())
-        output += "Tracker Time: " + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.trackerTime)) + "\n";
-
-    output += "Speed: " + lexical_cast<std::string>(gpsMessage.speed) + "\n";
-
-    if (!gpsMessage.phone.empty())
-        output += "Phone: *" + gpsMessage.phone + "*\n";
-
-    output += "Status: " + gpsMessage.keyword + "\n";
-
-    _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
+    sendGpsStatus(data[0], originalMessage->from->id);
 }
 
 void Application::handleStatusCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
 {
-    typedef boost::date_time::c_local_adjustor<posix_time::ptime> timeAdjustor;
-
     std::vector<GpsMessage> data;
 
     if (!dbGetGpsData(data, 1, false))
@@ -329,25 +309,101 @@ void Application::handleStatusCommand(const std::vector<std::string>& command, U
         return;
     }
 
-    const GpsMessage& gpsMessage = data[0];
+    sendGpsStatus(data[0], originalMessage->from->id);
+}
 
-    if (gpsMessage.valid)
-        _telegram.sendLocation(originalMessage->from->id, gpsMessage.latitude, gpsMessage.longitude);
+void Application::handleArmCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
+{
+    unsigned int status = UserSettings::Alert;
 
-    std::string output;
+    int32_t userId = originalMessage->from->id;
 
-    if (!gpsMessage.hostTime.is_special())
-        output += "Host Time: *" + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.hostTime)) + "*\n";
+    if (command.size() > 1)
+    {
+        if (iequals(command[1], "paranoid"))
+        {
+            status = UserSettings::Paranoid;
+        }
+        else if (iequals(command[1], "insane"))
+        {
+            status = UserSettings::Insane;
+        }
 
-    if (!gpsMessage.trackerTime.is_special())
-        output += "Tracker Time: " + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.trackerTime)) + "\n";
+        if (status != UserSettings::Paranoid && status != UserSettings::Insane)
+        {
+            _telegram.sendMessage(userId, "Usage: /arm [paranoid | insane]");
+            return;
+        }
+    }
 
-    output += "Speed: " + lexical_cast<std::string>(gpsMessage.speed) + "\n";
+    bool found = false;
 
-    if (!gpsMessage.phone.empty())
-        output += "Phone: *" + gpsMessage.phone + "*\n";
+    for (size_t i = 0; i < _userSettings.size(); ++i)
+    {
+        if (_userSettings[i].id == userId)
+        {
+            _userSettings[i].status = status;
 
-    output += "Status: " + gpsMessage.keyword + "\n";
+            found = true;
+            break;
+        }
+    }
 
-    _telegram.sendMessage(originalMessage->from->id, output, TelegramBot::Markdown);
+    if (!found)
+    {
+        UserSettings settingsRow;
+
+        settingsRow.id = userId;
+        settingsRow.status = status;
+
+        _userSettings.push_back(settingsRow);
+    }
+
+    switch (status)
+    {
+    case UserSettings::Alert:
+        _telegram.sendMessage(userId, "The system is in *armed* mode now.", TelegramBot::Markdown);
+        break;
+    case UserSettings::Paranoid:
+        _telegram.sendMessage(userId, "The system is in *paranoid* mode now.", TelegramBot::Markdown);
+        break;
+    case UserSettings::Insane:
+        _telegram.sendMessage(userId, "The system is in *insane* mode now.", TelegramBot::Markdown);
+        break;
+    }
+
+    if (!dbSaveSettings())
+    {
+        _telegram.sendMessage(userId, "I have troubles with database connection.");
+        return;
+    }
+}
+
+void Application::handleDisarmCommand(const std::vector<std::string>& command, User& user, const TgBot::Message::Ptr& originalMessage)
+{
+    bool found = false;
+
+    int32_t userId = originalMessage->from->id;
+
+    for (size_t i = 0; i < _userSettings.size(); ++i)
+    {
+        if (_userSettings[i].id == userId)
+        {
+            _userSettings[i].status = UserSettings::Default;
+
+            found = true;
+            break;
+        }
+    }
+
+    _telegram.sendMessage(userId, "The system is in *disarm* mode now.", TelegramBot::Markdown);
+
+    if (found)
+    {
+        if (!dbSaveSettings())
+        {
+            _telegram.sendMessage(userId, "I have troubles with database connection.");
+            return;
+        }
+    }
 }
