@@ -336,6 +336,7 @@
     <ClInclude Include="tgbot\types\WebhookInfo.h" />
     <ClInclude Include="Url.h" />
     <ClInclude Include="User.h" />
+    <ClInclude Include="UserSettings.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

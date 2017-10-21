@@ -39,8 +39,8 @@ public:
     enum Access
     {
         Default = 0,
-        User = 1,
-        Owner = 2
+        User    = 1,
+        Owner   = 2
     };
 
     static std::string getAccessString(unsigned int level)

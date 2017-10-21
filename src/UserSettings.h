@@ -21,12 +21,30 @@
 //
 
 
-#include "StdAfx.h"
+#ifndef UserSettings_INCLUDED
+#define UserSettings_INCLUDED
 
-#include "Application.h"
 
-
-void Application::handleTrackerEvent(const GpsMessage& data)
+class UserSettings
 {
-    dbAddGpsData(data);
-}
+public:
+    enum Status
+    {
+        Default  = 0,
+        Alert    = 1,
+        Paranoid = 2,
+        Insane   = 3
+    };
+
+    UserSettings()
+        : id(0)
+        , status(0)
+    {
+    }
+
+    int id;
+    unsigned int status;
+};
+
+
+#endif // UserSettings_INCLUDED

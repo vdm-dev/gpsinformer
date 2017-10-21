@@ -147,6 +147,7 @@ set (HEADERS
 	src/TelegramBotHandler.h
 	src/Url.h
 	src/User.h
+	src/UserSettings.h
 	src/Utilities.h
 )
 

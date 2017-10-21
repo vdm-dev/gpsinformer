@@ -76,6 +76,7 @@ int Application::main(int argc, char* argv[])
     configureLog();
 
     openDatabase();
+    dbRestoreSettings();
 
     fillCommandList();
 

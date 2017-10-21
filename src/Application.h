@@ -34,6 +34,7 @@
 #include "TelegramBotHandler.h"
 #include "Device.h"
 #include "GpsMessage.h"
+#include "UserSettings.h"
 
 
 struct sqlite3;
@@ -96,6 +97,7 @@ private:
     // ApplicationDatabase
     void openDatabase();
     void closeDatabase();
+    void dbRestoreSettings();
     bool dbAddGpsData(const GpsMessage& data);
     bool dbCreateUser(const User& user);
     bool dbGetGpsData(std::vector<GpsMessage>& data, unsigned int limit = 0, bool validOnly = false);
@@ -135,7 +137,10 @@ private:
 
     TelegramBot _telegram;
 
+    GpsMessage _lastMessage;
+
     std::map<shared_ptr<TcpSession>, shared_ptr<Device>> _devices;
+    std::vector<UserSettings> _userSettings;
 
     std::string _transmitterBuffer;
 

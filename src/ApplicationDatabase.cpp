@@ -48,23 +48,27 @@ void Application::openDatabase()
 {
     int result = 0;
 
-    const char* sqlUsers = "CREATE TABLE IF NOT EXISTS users ( \
-                                id  INTEGER NOT NULL PRIMARY KEY, \
-                                firstname TEXT NOT NULL, \
-                                lastname TEXT NOT NULL, \
-                                nickname TEXT NOT NULL, \
-                                access INTEGER NOT NULL DEFAULT 0)";
+    const char* sqlUsers    = "CREATE TABLE IF NOT EXISTS users ( \
+                                   id  INTEGER NOT NULL PRIMARY KEY, \
+                                   firstname TEXT NOT NULL, \
+                                   lastname TEXT NOT NULL, \
+                                   nickname TEXT NOT NULL, \
+                                   access INTEGER NOT NULL DEFAULT 0)";
 
-    const char* sqlData = "CREATE TABLE IF NOT EXISTS data ( \
-                                imei TEXT NOT NULL, \
-                                keyword TEXT NOT NULL, \
-                                phone TEXT NOT NULL, \
-                                tracker_time INTEGER NOT NULL DEFAULT 0, \
-                                host_time INTEGER NOT NULL DEFAULT 0, \
-                                latitude REAL NOT NULL DEFAULT 0.0, \
-                                longitude REAL NOT NULL DEFAULT 0.0, \
-                                speed REAL NOT NULL DEFAULT 0.0, \
-                                valid INTEGER NOT NULL DEFAULT 0)";
+    const char* sqlData     = "CREATE TABLE IF NOT EXISTS data ( \
+                                   imei TEXT NOT NULL, \
+                                   keyword TEXT NOT NULL, \
+                                   phone TEXT NOT NULL, \
+                                   tracker_time INTEGER NOT NULL DEFAULT 0, \
+                                   host_time INTEGER NOT NULL DEFAULT 0, \
+                                   latitude REAL NOT NULL DEFAULT 0.0, \
+                                   longitude REAL NOT NULL DEFAULT 0.0, \
+                                   speed REAL NOT NULL DEFAULT 0.0, \
+                                   valid INTEGER NOT NULL DEFAULT 0)";
+
+    const char* sqlSettings = "CREATE TABLE IF NOT EXISTS settings ( \
+                                   id  INTEGER NOT NULL PRIMARY KEY, \
+                                   status INTEGER NOT NULL DEFAULT 0)";
 
 
     std::string fileName = _settings.get("database.file", std::string());
@@ -90,6 +94,10 @@ void Application::openDatabase()
     if (result != SQLITE_OK)
         goto error;
 
+    result = sqlite3_exec(_database, sqlSettings, 0, 0, 0);
+    if (result != SQLITE_OK)
+        goto error;
+
     return;
 
 error:
@@ -102,6 +110,17 @@ void Application::closeDatabase()
 {
     sqlite3_close(_database);
     _database = 0;
+}
+
+void Application::dbRestoreSettings()
+{
+    std::vector<GpsMessage> data;
+
+    if (dbGetGpsData(data, 1, false))
+    {
+        if (!data.empty())
+            _lastMessage = data[0];
+    }
 }
 
 bool Application::dbAddGpsData(const GpsMessage& data)
