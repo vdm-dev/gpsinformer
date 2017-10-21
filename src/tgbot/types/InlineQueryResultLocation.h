@@ -25,8 +25,8 @@ public:
 	InlineQueryResultLocation()
         : latitude(0.0)
         , longitude(0.0)
-        , thumbHeight(0)
         , thumbWidth(0)
+        , thumbHeight(0)
     {
 		this->type = TYPE;
 	}

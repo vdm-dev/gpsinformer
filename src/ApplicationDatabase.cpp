@@ -178,11 +178,11 @@ bool Application::dbSaveSettings()
     int result = 0;
     sqlite3_stmt *stmt = 0;
 
+    const char* sql = "INSERT INTO settings (id, status) VALUES (?, ?)";
+
     result = sqlite3_exec(_database, "DELETE FROM settings", 0, 0, 0);
     if (result != SQLITE_OK)
         goto error;
-
-    const char* sql = "INSERT INTO settings (id, status) VALUES (?, ?)";
 
     for (size_t i = 0; i < _userSettings.size(); ++i)
     {
