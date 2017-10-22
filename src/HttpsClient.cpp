@@ -103,23 +103,26 @@ void HttpsClient::handleTcpClientConnect(SslClient* client)
 
 void HttpsClient::handleTcpClientDisconnect(SslClient* client, TcpClientHandler::Reason reason)
 {
+    if (reason == TcpClientHandler::ClosedByUser)
+        return;
+
     if (_handler)
         _handler->handleHttpClientResponse(_requestQueue.front(), _response);
 
     _requestQueue.pop_front();
     _response.clear();
 
-    if (reason != TcpClientHandler::ClosedByUser)
-    {
-        _waiting = false;
-        pushQueue();
-    }
+    _waiting = false;
+    pushQueue();
 }
 
 void HttpsClient::handleTcpClientError(SslClient* client, const system::error_code& error)
 {
     if (_waiting)
     {
+        _requestQueue.pop_front();
+        _response.clear();
+
         _waiting = false;
         pushQueue();
     }

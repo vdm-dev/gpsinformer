@@ -73,8 +73,8 @@ void SslClient::cleanup()
     _resolver.cancel();
 
     system::error_code error;
-    _socket.shutdown(error);
     _socket.lowest_layer().close(error);
+    _socket.shutdown(error);
 
     _connecting = false;
     _established = false;
