@@ -157,8 +157,20 @@ find_package (Threads REQUIRED)
 
 # OpenSSL
 if (WIN32)
-	set (OPENSSL_USE_STATIC_LIBS FALSE)
-	set (OPENSSL_ROOT_DIR dep/openssl)
+	set (OPENSSL_USE_STATIC_LIBS TRUE)
+	
+	if (OPENSSL_USE_STATIC_LIBS)
+		set (LIB_LIST
+			${LIB_LIST}
+			crypt32.lib
+		)	
+	endif()
+	
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+		set (OPENSSL_ROOT_DIR dep/openssl-x64)
+    else()
+		set (OPENSSL_ROOT_DIR dep/openssl-x32)
+    endif()	
 endif ()
 
 find_package (OpenSSL REQUIRED)
@@ -178,6 +190,7 @@ link_directories (${Boost_LIBRARY_DIRS})
 
 
 set (LIB_LIST
+	${LIB_LIST}
 	${CMAKE_THREAD_LIBS_INIT}
 	${OPENSSL_LIBRARIES}
 )
