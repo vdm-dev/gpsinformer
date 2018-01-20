@@ -28,8 +28,8 @@
 
 
 HttpsClient::HttpsClient(asio::io_service& ioService, HttpClientHandler* handler)
-    : _client(ioService)
-    , _waiting(false)
+    : _timer(ioService)
+    , _client(ioService)
     , _handler(handler)
 {
     _client.setEventHandler(this);
@@ -49,19 +49,79 @@ void HttpsClient::sendRequest(const HttpRequest& request)
 
 void HttpsClient::pushQueue()
 {
-    if (_waiting)
+    system::error_code errorCode;
+
+    _timer.expires_from_now(posix_time::milliseconds(1), errorCode);
+
+    if (!errorCode)
+        _timer.async_wait(bind(&HttpsClient::handleTimerEvent, this));
+}
+
+void HttpsClient::stop(bool clear)
+{
+    HttpClientHandler* handler = _handler;
+
+    _handler = 0; // Turn off events
+    _client.disconnect();
+    _handler = handler;
+
+    if (clear)
+    {
+        _requestQueue.clear();
+        _response.clear();
+    }
+}
+
+void HttpsClient::handleTcpClientConnect(SslClient* client)
+{
+    _response.clear();
+
+    if (!_requestQueue.empty())
+        _client.send(_requestQueue.front().getData());
+}
+
+void HttpsClient::handleTcpClientDisconnect(SslClient* client, TcpClientHandler::Reason reason)
+{
+    if (_handler && reason != TcpClientHandler::ClosedByUser)
+        _handler->handleHttpClientResponse(_requestQueue.front(), _response);
+
+    _requestQueue.pop_front();
+    _response.clear();
+
+    pushQueue();
+}
+
+void HttpsClient::handleTcpClientError(SslClient* client, const system::error_code& error)
+{
+    _response.clear();
+
+    if (error == asio::error::operation_aborted)
+    {
+        _requestQueue.pop_front();
+        pushQueue();
+        return;
+    }
+
+    if (_handler)
+        _handler->handleHttpClientError(error);
+}
+
+void HttpsClient::handleTcpClientReceivedData(SslClient* client, const std::string& data)
+{
+    _response += data;
+}
+
+void HttpsClient::handleTimerEvent()
+{
+    if (_client.isDisconnecting())
         return;
 
     if (_client.isConnecting() || _client.isConnected())
     {
-        if (_requestQueue.front().isLongPoll() && !_response.size())
-        {
-            if (_client.isConnecting())
-                _waiting = true;
+        if (_requestQueue.front().isLongPoll() && _response.size() == 0)
+            _client.disconnect();
 
-            stop(false);
-        }
-
+        // Waiting for current request to finish
         return;
     }
 
@@ -76,63 +136,5 @@ void HttpsClient::pushQueue()
 
         _client.connect(url.host, url.protocol);
     }
-}
 
-void HttpsClient::stop(bool clear)
-{
-    HttpClientHandler* handler = _handler;
-
-    _handler = 0; // Turn off events
-    _client.disconnect(true);
-    _handler = handler;
-
-    if (clear)
-    {
-        _requestQueue.clear();
-        _waiting = false;
-    }
-}
-
-void HttpsClient::handleTcpClientConnect(SslClient* client)
-{
-    _response.clear();
-
-    if (!_requestQueue.empty())
-        _client.send(_requestQueue.front().getData());
-}
-
-void HttpsClient::handleTcpClientDisconnect(SslClient* client, TcpClientHandler::Reason reason)
-{
-    if (reason == TcpClientHandler::ClosedByUser)
-        return;
-
-    if (_handler)
-        _handler->handleHttpClientResponse(_requestQueue.front(), _response);
-
-    _requestQueue.pop_front();
-    _response.clear();
-
-    _waiting = false;
-    pushQueue();
-}
-
-void HttpsClient::handleTcpClientError(SslClient* client, const system::error_code& error)
-{
-    if (_waiting)
-    {
-        _requestQueue.pop_front();
-        _response.clear();
-
-        _waiting = false;
-        pushQueue();
-    }
-    else if (_handler)
-    {
-        _handler->handleHttpClientError(error);
-    }
-}
-
-void HttpsClient::handleTcpClientReceivedData(SslClient* client, const std::string& data)
-{
-    _response += data;
 }

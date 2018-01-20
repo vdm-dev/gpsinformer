@@ -36,10 +36,10 @@ public:
     ~TcpClient();
 
     void connect(const std::string& server, unsigned short port);
-    void disconnect(bool byUser = true);
+    void connect(const std::string& server, const std::string& protocol);
+    void disconnect();
 
-    void cleanup();
-
+    void send(const unsigned char* buffer, size_t length);
     void send(const std::string& data);
 
     void setEventHandler(TcpClientHandler<TcpClient>* handler);
@@ -47,18 +47,32 @@ public:
     asio::ip::tcp::socket& socket();
 
 private:
+    enum Status
+    {
+        Disconnected,
+        Resolve,
+        Connecting,
+        Connected,
+        Disconnecting
+    };
+
+    bool handleAnything(Status handleStatus, const system::error_code& error);
+    void handleResolve(const system::error_code& error, asio::ip::tcp::resolver::iterator endpoint);
     void handleConnect(const system::error_code& error);
     void handleRead(size_t size, const system::error_code& error);
     void handleWrite(size_t size, const system::error_code& error);
 
-    asio::io_service& _ioService;
     asio::ip::tcp::resolver _resolver;
     asio::ip::tcp::socket _socket;
 
     std::vector<char> _readBuffer;
-    std::deque<std::string> _writeQueue;
+    std::deque<std::string> _writeBuffer;
 
     TcpClientHandler<TcpClient>* _handler;
+
+    Status _status;
+
+    int _ioCount;
 };
 
 

@@ -52,13 +52,15 @@ private:
     void handleTcpClientError(SslClient* client, const system::error_code& error);
     void handleTcpClientReceivedData(SslClient* client, const std::string& data);
 
+    void handleTimerEvent();
+
+    asio::deadline_timer _timer;
+
     SslClient _client;
 
     std::deque<HttpRequest> _requestQueue;
 
     std::string _response;
-
-    bool _waiting;
 
     HttpClientHandler* _handler;
 };

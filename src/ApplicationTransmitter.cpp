@@ -152,7 +152,7 @@ void Application::handleTcpClientReceivedData(TcpClient* client, const std::stri
                 {
                     // Access denied or protocol error
                     BOOST_LOG_TRIVIAL(error) << "Transmitter access denied";
-                    _transmitter.disconnect(false);
+                    _transmitter.disconnect();
                     return;
                 }
                 else
@@ -182,7 +182,7 @@ void Application::handleTcpClientReceivedData(TcpClient* client, const std::stri
         {
             // Access denied or protocol error
             BOOST_LOG_TRIVIAL(error) << "Transmitter access denied (protocol error)";
-            _transmitter.disconnect(false);
+            _transmitter.disconnect();
             return;
         }
 
@@ -210,7 +210,7 @@ void Application::handleTcpClientReceivedData(TcpClient* client, const std::stri
     }
 
     if (_transmitterBuffer.size() > 32768)
-        _transmitter.disconnect(false);
+        _transmitter.disconnect();
 }
 
 void Application::handleTransmitterTimer(const system::error_code& error)

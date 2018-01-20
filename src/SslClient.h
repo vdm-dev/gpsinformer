@@ -25,11 +25,18 @@
 #define SslClient_INCLUDED
 
 
-template <class T>
-class TcpClientHandler;
+#include <mbedtls/debug.h>
+#include <mbedtls/ssl.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/error.h>
+#include <mbedtls/certs.h>
+
+#include "TcpClient.h"
+#include "TcpClientHandler.h"
 
 
-class SslClient
+class SslClient : public TcpClientHandler<TcpClient>
 {
 public:
     SslClient(asio::io_service& ioService, TcpClientHandler<SslClient>* handler = 0);
@@ -37,58 +44,84 @@ public:
 
     void connect(const std::string& server, unsigned short port);
     void connect(const std::string& server, const std::string& protocol);
-    void disconnect(bool byUser = true);
-
-    void cleanup();
+    void disconnect();
 
     void send(const std::string& data);
 
     bool isConnected() const;
     bool isConnecting() const;
+    bool isDisconnecting() const;
     void setEventHandler(TcpClientHandler<SslClient>* handler);
 
-    asio::ssl::stream<asio::ip::tcp::socket>& socket();
-
 private:
-    void handleConnect(const system::error_code& error);
+    enum Status
+    {
+        Disconnected,
+        Connecting,
+        Handshake,
+        Connected,
+        Disconnecting,
+        Error
+    };
+
+    static int sslReceiveCallback(void* context, unsigned char* buffer, size_t length);
+    static int sslSendCallback(void* context, const unsigned char* buffer, size_t length);
+
+    bool handleAnything(Status handleStatus, const system::error_code& error);
     void handleHandshake(const system::error_code& error);
-    void handleRead(size_t size, const system::error_code& error);
-    void handleResolve(const system::error_code& error, asio::ip::tcp::resolver::iterator endpoint);
-    void handleWrite(size_t size, const system::error_code& error);
+    void handleRead(const system::error_code& error);
+    void handleWrite(const system::error_code& error);
 
-    asio::io_service& _ioService;
-    asio::ip::tcp::resolver _resolver;
-    asio::ssl::context _context;
-    asio::ssl::stream<asio::ip::tcp::socket> _socket;
+    // TCP Client Handlers
+    void handleTcpClientConnect(TcpClient* client);
+    void handleTcpClientDisconnect(TcpClient* client, TcpClientHandler::Reason reason);
+    void handleTcpClientError(TcpClient* client, const system::error_code& error);
+    void handleTcpClientReceivedData(TcpClient* client, const std::string& data);
 
-    std::vector<char> _readBuffer;
-    std::deque<std::string> _writeQueue;
+    TcpClient _tcpClient;
+
+    asio::deadline_timer _timer;
+    asio::deadline_timer _timerRead;
+    asio::deadline_timer _timerWrite;
+
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+    mbedtls_ssl_context ssl;
+    mbedtls_ssl_config conf;
+    mbedtls_x509_crt cacert;
+
+    std::string _server;
+    std::vector<char> _sslBuffer;
+    std::deque<std::string> _writeBuffer;
 
     TcpClientHandler<SslClient>* _handler;
 
-    bool _connecting;
-    bool _established;
+    Status _status;
+
+    int _ioCount;
+
+    bool _wasConnected;
 };
 
 
 inline bool SslClient::isConnected() const
 {
-    return _socket.lowest_layer().is_open() && _established;
+    return _status == Connected;
 }
 
 inline bool SslClient::isConnecting() const
 {
-    return _connecting;
+    return _status == Connecting || _status == Handshake;
+}
+
+inline bool SslClient::isDisconnecting() const
+{
+    return _status == Disconnecting || _status == Error;
 }
 
 inline void SslClient::setEventHandler(TcpClientHandler<SslClient>* handler)
 {
     _handler = handler;
-}
-
-inline asio::ssl::stream<asio::ip::tcp::socket>& SslClient::socket()
-{
-    return _socket;
 }
 
 
