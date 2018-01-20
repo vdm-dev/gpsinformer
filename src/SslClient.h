@@ -64,13 +64,17 @@ private:
         Error
     };
 
-    static int sslReceiveCallback(void* context, unsigned char* buffer, size_t length);
-    static int sslSendCallback(void* context, const unsigned char* buffer, size_t length);
+    static void sslDebugCallback(void *context, int level, const char *file, int line, const char *string);
+    static int  sslReadCallback(void* context, unsigned char* buffer, size_t length);
+    static int  sslWriteCallback(void* context, const unsigned char* buffer, size_t length);
+
+    bool sslInitialize();
+    void sslFree();
 
     bool handleAnything(Status handleStatus, const system::error_code& error);
-    void handleHandshake(const system::error_code& error);
-    void handleRead(const system::error_code& error);
-    void handleWrite(const system::error_code& error);
+    void handleHandshake();
+    void handleRead();
+    void handleWrite();
 
     // TCP Client Handlers
     void handleTcpClientConnect(TcpClient* client);
@@ -84,13 +88,12 @@ private:
     asio::deadline_timer _timerRead;
     asio::deadline_timer _timerWrite;
 
-    mbedtls_entropy_context entropy;
-    mbedtls_ctr_drbg_context ctr_drbg;
-    mbedtls_ssl_context ssl;
-    mbedtls_ssl_config conf;
-    mbedtls_x509_crt cacert;
+    mbedtls_ssl_context _sslContext;
+    mbedtls_ssl_config _sslConfiguration;
+    mbedtls_x509_crt _sslCaRoot;
+    mbedtls_ctr_drbg_context _sslCtrDrbg;
+    mbedtls_entropy_context _sslEntropy;
 
-    std::string _server;
     std::vector<char> _sslBuffer;
     std::deque<std::string> _writeBuffer;
 
@@ -100,6 +103,7 @@ private:
 
     int _ioCount;
 
+    bool _sslInitialized;
     bool _wasConnected;
 };
 

@@ -26,6 +26,7 @@
 #include "Application.h"
 
 #include <sqlite3.h>
+#include <mbedtls/debug.h>
 
 
 Application* Application::_instance = 0;
@@ -180,6 +181,10 @@ void Application::configureLog()
     std::string file           = _settings.get("log.file", "");
     uintmax_t   rotationSize   = _settings.get("log.rotation_size", 0);
     int         level          = _settings.get("log.level", 0);
+    int         ssl_level      = _settings.get("log.ssl_level", 0);
+
+    mbedtls_debug_set_threshold(ssl_level);
+
 
     if (!rotationSize)
         rotationSize = std::numeric_limits<uintmax_t>::max();
