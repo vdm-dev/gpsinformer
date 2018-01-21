@@ -4,6 +4,8 @@ set (PROJECT gpsinformer)
 
 project (${PROJECT})
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 if (NOT MSVC)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 endif ()
@@ -156,25 +158,51 @@ find_package (Threads REQUIRED)
 
 
 # OpenSSL
-if (WIN32)
-	set (OPENSSL_USE_STATIC_LIBS TRUE)
+if (MSVC)
+    set (MBEDTLS_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dep/mbedtls")
 	
-	if (OPENSSL_USE_STATIC_LIBS)
-		set (LIB_LIST
-			${LIB_LIST}
-			crypt32.lib
-		)	
-	endif()
-	
+	find_path(MBEDTLS_INCLUDE_DIR
+			  NAMES mbedtls/ssl.h
+			  PATH_SUFFIXES include
+			  HINTS ${MBEDTLS_ROOT_DIR}
+			  NO_CMAKE_FIND_ROOT_PATH)	
+
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set (OPENSSL_ROOT_DIR dep/openssl-x64)
+		set (MBEDTLS_LIB_SUFFIX lib64)
     else()
-		set (OPENSSL_ROOT_DIR dep/openssl-x32)
+		set (MBEDTLS_LIB_SUFFIX lib)
     endif()	
+	
+	find_library(MBEDTLS_LIBRARY
+				 NAMES mbedtls
+				 PATH_SUFFIXES ${MBEDTLS_LIB_SUFFIX}
+				 HINTS ${MBEDTLS_ROOT_DIR}
+				 NO_CMAKE_FIND_ROOT_PATH)
+
+	find_library(MBEDTLS_CRYPTO_LIBRARY
+				 NAMES mbedcrypto
+				 PATH_SUFFIXES ${MBEDTLS_LIB_SUFFIX}
+				 HINTS ${MBEDTLS_ROOT_DIR}
+				 NO_CMAKE_FIND_ROOT_PATH)
+
+	find_library(MBEDTLS_X509_LIBRARY
+				 NAMES mbedx509
+				 PATH_SUFFIXES ${MBEDTLS_LIB_SUFFIX}
+				 HINTS ${MBEDTLS_ROOT_DIR}
+				 NO_CMAKE_FIND_ROOT_PATH)
+
+	set (MBEDTLS_LIBRARIES ${MBEDTLS_LIBRARY} ${MBEDTLS_CRYPTO_LIBRARY} ${MBEDTLS_X509_LIBRARY})
+	set (MBEDTLS_FOUND TRUE)
+else ()
+	find_package (MbedTLS REQUIRED)
 endif ()
 
-find_package (OpenSSL REQUIRED)
 
+if(NOT MBEDTLS_FOUND)
+    message(FATAL_ERROR "mbedTLS libraries not found")
+else()
+    message(STATUS "Found mbedTLS libraries")
+endif()
 
 # Boost
 set (Boost_USE_MULTITHREADED ON)
@@ -183,7 +211,7 @@ find_package (Boost REQUIRED COMPONENTS system log log_setup date_time thread fi
 
 
 include_directories (dep/sqlite3/include src)
-include_directories (${OPENSSL_INCLUDE_DIR})
+include_directories (${MBEDTLS_INCLUDE_DIR})
 include_directories (${Boost_INCLUDE_DIR})
 
 link_directories (${Boost_LIBRARY_DIRS})
@@ -192,7 +220,7 @@ link_directories (${Boost_LIBRARY_DIRS})
 set (LIB_LIST
 	${LIB_LIST}
 	${CMAKE_THREAD_LIBS_INIT}
-	${OPENSSL_LIBRARIES}
+	${MBEDTLS_LIBRARIES}
 )
 
 # Visual Studio supports auto-linking of Boost Libraries
