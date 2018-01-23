@@ -73,7 +73,7 @@ private:
 
     bool handleAnything(Status handleStatus, const system::error_code& error);
     void handleHandshake();
-    void handleRead();
+    bool handleRead();
     void handleWrite();
 
     // TCP Client Handlers
@@ -85,8 +85,6 @@ private:
     TcpClient _tcpClient;
 
     asio::deadline_timer _timer;
-    asio::deadline_timer _timerRead;
-    asio::deadline_timer _timerWrite;
 
     mbedtls_ssl_context _sslContext;
     mbedtls_ssl_config _sslConfiguration;

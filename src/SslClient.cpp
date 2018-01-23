@@ -145,8 +145,6 @@ void SslClient::sslFree()
 SslClient::SslClient(asio::io_service& ioService, TcpClientHandler<SslClient>* handler)
     : _tcpClient(ioService)
     , _timer(ioService)
-    , _timerRead(ioService)
-    , _timerWrite(ioService)
     , _handler(handler)
     , _status(Disconnected)
     , _ioCount(0)
@@ -220,15 +218,8 @@ void SslClient::send(const std::string& data)
 
     if (!inProgress)
     {
-        system::error_code error;
-
-        _timerWrite.expires_from_now(posix_time::milliseconds(1), error);
-
-        if (!error)
-        {
-            _ioCount++;
-            _timerWrite.async_wait(bind(&SslClient::handleWrite, this));
-        }
+        _ioCount++;
+        handleWrite();
     }
 }
 
@@ -290,17 +281,7 @@ void SslClient::handleHandshake()
         return;
 
     if (result == MBEDTLS_ERR_SSL_WANT_READ || result == MBEDTLS_ERR_SSL_WANT_WRITE)
-    {
-        _timer.expires_from_now(posix_time::milliseconds(1), error);
-
-        if (!error)
-        {
-            _ioCount++;
-            _timer.async_wait(bind(&SslClient::handleHandshake, this));
-        }
-
         return;
-    }
 
     uint32_t flags = mbedtls_ssl_get_verify_result(&_sslContext);
     if (flags != 0)
@@ -316,17 +297,9 @@ void SslClient::handleHandshake()
 
     if (_handler)
         _handler->handleTcpClientConnect(this);
-    
-    _timerRead.expires_from_now(posix_time::milliseconds(1), error);
-
-    if (!error)
-    {
-        _ioCount++;
-        _timerRead.async_wait(bind(&SslClient::handleRead, this));
-    }
 }
 
-void SslClient::handleRead()
+bool SslClient::handleRead()
 {
     system::error_code error;
 
@@ -335,10 +308,13 @@ void SslClient::handleRead()
     int result = mbedtls_ssl_read(&_sslContext, (unsigned char*) readBuffer, sizeof(readBuffer));
 
     if (result <= 0 && result != MBEDTLS_ERR_SSL_WANT_READ && result != MBEDTLS_ERR_SSL_WANT_WRITE)
-        error = system::error_code(result ? result : 2, asio::error::get_misc_category());
+    {
+        error = system::error_code(
+            result ? result : asio::error::misc_errors::eof, asio::error::get_misc_category());
+    }
 
     if (!handleAnything(Connected, error))
-        return;
+        return false;
 
     if (_handler && result > 0)
     {
@@ -347,13 +323,7 @@ void SslClient::handleRead()
         _handler->handleTcpClientReceivedData(this, data);
     }
 
-    _timerRead.expires_from_now(posix_time::milliseconds(1), error);
-
-    if (!error)
-    {
-        _ioCount++;
-        _timerRead.async_wait(bind(&SslClient::handleRead, this));
-    }
+    return (result > 0);
 }
 
 void SslClient::handleWrite()
@@ -371,22 +341,23 @@ void SslClient::handleWrite()
     int result = mbedtls_ssl_write(&_sslContext, (const unsigned char*) data.data(), data.size());
 
     if (result <= 0 && result != MBEDTLS_ERR_SSL_WANT_READ && result != MBEDTLS_ERR_SSL_WANT_WRITE)
-        error = system::error_code(result ? result : 2, asio::error::get_misc_category());
+    {
+        error = system::error_code(
+            result ? result : asio::error::misc_errors::eof, asio::error::get_misc_category());
+    }
 
     if (!handleAnything(Connected, error))
         return;
 
     if (result != MBEDTLS_ERR_SSL_WANT_WRITE && result != MBEDTLS_ERR_SSL_WANT_READ)
-    {
         _writeBuffer.pop_front();
-    }
 
-    _timerWrite.expires_from_now(posix_time::milliseconds(1), error);
+    _timer.expires_from_now(posix_time::milliseconds(1), error);
 
     if (!error)
     {
         _ioCount++;
-        _timerWrite.async_wait(bind(&SslClient::handleWrite, this));
+        _timer.async_wait(bind(&SslClient::handleWrite, this));
     }
 }
 
@@ -394,36 +365,12 @@ void SslClient::handleTcpClientConnect(TcpClient* client)
 {
     _status = Handshake;
 
-    system::error_code error;
-
-    _timer.expires_from_now(posix_time::milliseconds(1), error);
-
-    if (!error)
-    {
-        _ioCount++;
-        _timer.async_wait(bind(&SslClient::handleHandshake, this));
-    }
+    _ioCount++;
+    handleHandshake();
 }
 
 void SslClient::handleTcpClientDisconnect(TcpClient* client, TcpClientHandler::Reason reason)
 {
-    char readBuffer[32768];
-
-    while (_wasConnected && _sslBuffer.size() != 0)
-    {
-        int result = mbedtls_ssl_read(&_sslContext, (unsigned char*) readBuffer, sizeof(readBuffer));
-        if (result <= 0)
-            break;
-
-        if (_handler)
-        {
-            std::string data(readBuffer, result);
-
-            _handler->handleTcpClientReceivedData(this, data);
-        }
-
-    }
-
     _ioCount++;
     handleAnything(_wasConnected ? Connected : Handshake, asio::error::make_error_code(asio::error::misc_errors::eof));
 }
@@ -437,4 +384,19 @@ void SslClient::handleTcpClientError(TcpClient* client, const system::error_code
 void SslClient::handleTcpClientReceivedData(TcpClient* client, const std::string& data)
 {
     _sslBuffer.insert(_sslBuffer.end(), data.begin(), data.end());
+
+    if (_status == Handshake)
+    {
+        _ioCount++;
+        handleHandshake();
+    }
+    else
+    {
+        while (_status == Connected)
+        {
+            _ioCount++;
+            if (!handleRead())
+                break;
+        }
+    }
 }
