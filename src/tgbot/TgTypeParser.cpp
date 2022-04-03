@@ -81,7 +81,7 @@ string TgTypeParser::parseChat(const Chat::Ptr& object) const {
 
 User::Ptr TgTypeParser::parseJsonAndGetUser(const ptree& data) const {
 	User::Ptr result(new User);
-	result->id = data.get<int32_t>("id");
+	result->id = data.get<int64_t>("id");
 	result->firstName = data.get<string>("first_name");
 	result->lastName = data.get("last_name", "");
 	result->username = data.get("username", "");

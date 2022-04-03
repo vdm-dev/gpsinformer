@@ -40,7 +40,7 @@ public:
 	/**
 	 * Unique identifier for this user or bot.
 	 */
-	int32_t id;
+	int64_t id;
 
 	/**
 	 * User‘s or bot’s first name.

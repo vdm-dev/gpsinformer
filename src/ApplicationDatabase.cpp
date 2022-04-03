@@ -147,7 +147,7 @@ void Application::dbRestoreSettings()
 
             if (columnName == "id")
             {
-                settingsRow.id = sqlite3_column_int(stmt, column);
+                settingsRow.id = sqlite3_column_int64(stmt, column);
             }
             else if (columnName == "status")
             {
@@ -190,7 +190,7 @@ bool Application::dbSaveSettings()
         if (result != SQLITE_OK)
             goto error;
 
-        result = sqlite3_bind_int(stmt, 1, _userSettings[i].id);
+        result = sqlite3_bind_int64(stmt, 1, _userSettings[i].id);
         if (result != SQLITE_OK)
             goto error;
 
@@ -298,7 +298,7 @@ bool Application::dbCreateUser(const User& user)
     if (result != SQLITE_OK)
         goto error;
 
-    result = sqlite3_bind_int(stmt, 1, user.tg->id);
+    result = sqlite3_bind_int64(stmt, 1, user.tg->id);
     if (result != SQLITE_OK)
         goto error;
 
@@ -453,7 +453,7 @@ bool Application::dbSearchUser(User& user)
     if (result != SQLITE_OK)
         goto error;
 
-    result = sqlite3_bind_int(stmt, 1, user.tg->id);
+    result = sqlite3_bind_int64(stmt, 1, user.tg->id);
     if (result != SQLITE_OK)
         goto error;
 
@@ -540,7 +540,7 @@ bool Application::dbUpdateUser(const User& user)
     if (result != SQLITE_OK)
         goto error;
 
-    result = sqlite3_bind_int(stmt, 5, user.tg->id);
+    result = sqlite3_bind_int64(stmt, 5, user.tg->id);
     if (result != SQLITE_OK)
         goto error;
 

@@ -316,7 +316,7 @@ void Application::handleArmCommand(const std::vector<std::string>& command, User
 {
     unsigned int status = UserSettings::Alert;
 
-    int32_t userId = originalMessage->from->id;
+    int64_t userId = originalMessage->from->id;
 
     if (command.size() > 1)
     {
@@ -383,7 +383,7 @@ void Application::handleDisarmCommand(const std::vector<std::string>& command, U
 {
     bool found = false;
 
-    int32_t userId = originalMessage->from->id;
+    int64_t userId = originalMessage->from->id;
 
     for (size_t i = 0; i < _userSettings.size(); ++i)
     {

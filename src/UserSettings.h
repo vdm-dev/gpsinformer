@@ -42,7 +42,7 @@ public:
     {
     }
 
-    int id;
+    int64_t id;
     unsigned int status;
 };
 
