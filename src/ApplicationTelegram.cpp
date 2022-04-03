@@ -63,7 +63,7 @@ void Application::sendGpsStatus(const GpsMessage & gpsMessage, int32_t userId)
         output += "Host Time: *" + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.hostTime)) + "*\n";
 
     if (!gpsMessage.trackerTime.is_special())
-        output += "Tracker Time: " + posix_time::to_simple_string(timeAdjustor::utc_to_local(gpsMessage.trackerTime)) + "\n";
+        output += "Tracker Time: " + posix_time::to_simple_string(gpsMessage.trackerTime) + "\n";
 
     output += "Speed: " + lexical_cast<std::string>(gpsMessage.speed) + "\n";
 

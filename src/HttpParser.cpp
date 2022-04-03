@@ -22,10 +22,8 @@
 //
 
 
+#include "StdAfx.h"
 #include "HttpParser.h"
-
-#include <iomanip>
-#include <boost/algorithm/string.hpp>
 
 
 using namespace std;

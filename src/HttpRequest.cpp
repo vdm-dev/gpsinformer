@@ -21,6 +21,7 @@
 //
 
 
+#include "StdAfx.h"
 #include "HttpRequest.h"
 
 
