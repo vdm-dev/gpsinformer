@@ -87,7 +87,7 @@ private:
 
     // ApplicationTelegram
     void startTelegram();
-    void sendGpsStatus(const GpsMessage& gpsMessage, int32_t userId);
+    void sendGpsStatus(const GpsMessage& gpsMessage, int64_t userId);
     void handleInlineQuery(const TgBot::InlineQuery::Ptr& inlineQuery);
     void handleChosenInlineResult(const TgBot::ChosenInlineResult::Ptr& chosenInlineResult);
     void handleCallbackQuery(const TgBot::CallbackQuery::Ptr& callbackQuery);

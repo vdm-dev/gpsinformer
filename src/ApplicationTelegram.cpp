@@ -50,7 +50,7 @@ void Application::startTelegram()
     _telegram.getMe();
 }
 
-void Application::sendGpsStatus(const GpsMessage & gpsMessage, int32_t userId)
+void Application::sendGpsStatus(const GpsMessage & gpsMessage, int64_t userId)
 {
     typedef boost::date_time::c_local_adjustor<posix_time::ptime> timeAdjustor;
 
